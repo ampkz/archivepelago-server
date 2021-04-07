@@ -2,15 +2,20 @@ require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
 const app = express();
+const uriConfig = require('../routing/uriConfig');
 
 // eslint-disable-next-line no-undef
 global.__basedir = __dirname;
 
 const { errorHandler } = require("../middleware/errors");
+const admin = require('../routing/admin');
+
 
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(uriConfig.admin, admin);
 
 // eslint-disable-next-line no-undef
 if(process.env.NODE_ENV !== 'test'){
@@ -48,7 +53,7 @@ if(process.env.NODE_ENV !== 'test'){
 	const options = {
 		swaggerDefinition,
 		// Paths to files containing OpenAPI definitions
-		apis: ['./routing/api/*.js', './routing/admin.js'],
+		apis: ['./routing/api/*.js', './routing/admin/*.js'],
 	};
 	
 	const swaggerSpec = swaggerJSDoc(options);
