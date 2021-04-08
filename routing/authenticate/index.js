@@ -6,7 +6,7 @@ const archiveNeo4jUsers = require('../routes/users');
 
 /**
  * @swagger
- * /admin/authenticate:
+ * /authenticate:
  *   post:
  *     summary: Authenticate user.
  *     tags:
@@ -61,7 +61,7 @@ const archiveNeo4jUsers = require('../routes/users');
 
  /**
   * @swagger
-  * /admin/authenticate:
+  * /authenticate:
   *   get:
   *     summary: Method not allowed.
   *     tags:
@@ -80,7 +80,7 @@ const archiveNeo4jUsers = require('../routes/users');
  
   /**
   * @swagger
-  * /admin/authenticate:
+  * /authenticate:
   *   put:
   *     summary: Method not allowed.
   *     tags:
@@ -99,7 +99,7 @@ const archiveNeo4jUsers = require('../routes/users');
  
  /**
   * @swagger
-  * /admin/authenticate:
+  * /authenticate:
   *   delete:
   *     summary: Method not allowed.
   *     tags:

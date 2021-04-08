@@ -5,9 +5,15 @@ const { permitRoles } = require("../../middleware/auth");
 const { sendStatus405 } = require('../../middleware/errors');
 const { Auth } = require('../../_helpers/auth');
 const archiveNeo4jUsers = require('../routes/users');
+
 /**
  * @swagger
  * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  *   schemas:
  *     User:
  *       type: object
@@ -115,14 +121,8 @@ const archiveNeo4jUsers = require('../routes/users');
  *                 type: string
  *                 example: p4ssw0rd
  *                 description: User's password.
- *     parameters:
- *       - in: header
- *         name: Authorization
- *         description: Authorization JSON Web Token.
- *         schema:
- *           type: string
- *         example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiYXV0aCI6ImFkbWluIiwiaWF0IjoxNjE2MzQ5MjMwLCJleHAiOjE2MTYzNDkyOTB9.EEL2OPAIWMgkeE8qh_0fMfSpYJhUkuafEebx7ffltZc
- *         required: true
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       201:
  *         description: The user was created successfully.
@@ -163,14 +163,8 @@ router.post('/users', permitRoles(Auth.ADMIN), archiveNeo4jUsers.createUser);
  *     summary: Retrieve a list of users. (Must Be Admin)
  *     tags:
  *       - Users
- *     parameters:
- *       - in: header
- *         name: Authorization
- *         description: Authorization JSON Web Token.
- *         schema:
- *           type: string
- *         example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiYXV0aCI6ImFkbWluIiwiaWF0IjoxNjE2MzQ5MjMwLCJleHAiOjE2MTYzNDkyOTB9.EEL2OPAIWMgkeE8qh_0fMfSpYJhUkuafEebx7ffltZc
- *         required: true
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       401:
  *         description: Invalid authentication token.
