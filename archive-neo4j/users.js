@@ -116,3 +116,8 @@ exports.checkPassword = function(email, password){
     return promise;
 
 }
+
+exports.getUsers = function(){
+    // eslint-disable-next-line no-undef
+    return getResource(findResource, [`MATCH (u:USER) RETURN u`, {}, null, process.env.USERS_DB], [0], process.env.USERS_DB);
+}

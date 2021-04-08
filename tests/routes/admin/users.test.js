@@ -12,9 +12,8 @@ const supertest = require("supertest");
 const uriConfig = require('../../../routing/uriConfig');
 const { RoutingError, ArchiveError, FieldError } = require("../../../_helpers/errors");
 const { signToken, Auth } = require("../../../_helpers/auth");
-const { sampleOne, gen } = require('testcheck');
 const faker = require('faker');
-// const archiveNeo4jUsers = require('../../../archive-neo4j/users');
+const archiveNeo4jUsers = require('../../../archive-neo4j/users');
 
 beforeAll(async () => {
     await serverInit(false);
@@ -168,6 +167,32 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
             })
     })
 
+    it(`should return http status of 201 with Location header on POST`, done => {
+        const email = faker.internet.email();
+        const password = faker.internet.password();
+        const firstName = faker.name.firstName();
+        const lastName = faker.name.lastName();
+        const secondName = faker.name.middleName();
+        const auth = Auth.ADMIN;
+        const token = signToken('admin', Auth.ADMIN, '60s');
+        supertest(server).post(`${uriConfig.api + uriConfig.admin}/users`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({email, password, firstName, lastName, secondName, auth})
+            .expect(201)
+            .then(response => {
+                expect(response.headers.location).toBe(`/${response.body.id}`);
+                expect(response.body.email).toBe(email);
+                expect(response.body.firstName).toBe(firstName);
+                expect(response.body.lastName).toBe(lastName);
+                expect(response.body.secondName).toBe(secondName);
+                expect(response.body.auth).toBe(auth);
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
     it(`should return http status of 403 on POST with invalid authorization token`, done => {
         supertest(server).post(`${uriConfig.api + uriConfig.admin}/users`)
             .set('Authorization', `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiYXV0aCI6ImFkbWluIiwiaWF0IjoxNjE2MzQ5MjMwLCJleHAiOjE2MTYzNDkyOTB9.EEL2OPAIWMgkeE8qh_0fMfSpYJhUkuafEebx7ffltZc`) 
@@ -204,4 +229,43 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
                 done(error);
             })
     })
+
+    it(`should return http status of 401 with Authorization realm header on GET without authorization header`, done => {
+        supertest(server).get(`${uriConfig.api + uriConfig.admin}/users`)
+            .expect(401)
+            .then(response => {
+                expect(response.headers['www-authenticate']).toBe(`Basic realm="${process.env.AUTH_REALM}"`);
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 403 on GET with invalid authorization token`, done => {
+        supertest(server).get(`${uriConfig.api + uriConfig.admin}/users`)
+            .set('Authorization', `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiYXV0aCI6ImFkbWluIiwiaWF0IjoxNjE2MzQ5MjMwLCJleHAiOjE2MTYzNDkyOTB9.EEL2OPAIWMgkeE8qh_0fMfSpYJhUkuafEebx7ffltZc`) 
+            .expect(403)
+            .then(() => {
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 403 on GET as contributor`, done => {
+        const token = signToken('admin', Auth.CONTRIBUTOR, '60s');
+        supertest(server).get(`${uriConfig.api + uriConfig.admin}/users`)
+            .set('Authorization', `Bearer ${token}`) 
+            .expect(403)
+            .then(() => {
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    
 })

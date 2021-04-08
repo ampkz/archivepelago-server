@@ -72,121 +72,9 @@ const archiveNeo4jUsers = require('../routes/users');
 
 /**
  * @swagger
- * /admin/authenticate:
- *   post:
- *     summary: Authenticate user.
- *     tags:
- *       - Authentication
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 required: true
- *                 type: string
- *                 example: user@email.com
- *                 description: User's email address.
- *               password:
- *                 required: true
- *                 type: string
- *                 example: p4ssw0rd
- *                 description: User's password.
- *     responses:
- *       200:
- *         description: Authenticated token.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *                   description: Authenticated JSON Web Token.
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiYXV0aCI6ImFkbWluIiwiaWF0IjoxNjE2MzQ5MjMwLCJleHAiOjE2MTYzNDkyOTB9.EEL2OPAIWMgkeE8qh_0fMfSpYJhUkuafEebx7ffltZc
- *       400:
- *         description: Missing/malformed fields.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/FieldErrorMessage'
- *       401:
- *         description: Invalid log-in credentials.
- *         headers:
- *           WWW-Authenticate:
- *             schema:
- *               type: string
- *               example: Archivepelago Authentication
- *             description: The authentication realm.
- *             
- */
-router.post('/authenticate', archiveNeo4jUsers.authenticate)
-
-
-/**
- * @swagger
- * /admin/authenticate:
- *   get:
- *     summary: Method not allowed.
- *     tags:
- *       - Authentication
- *     responses:
- *       405:
- *         description: Method not allowed.
- *         headers:
- *           Allow:
- *             schema:
- *               type: string
- *               example: 'POST'
- *             description: The methods allowed at this endpoint.
- */
-router.get('/authenticate', sendStatus405('POST'));
-
- /**
- * @swagger
- * /admin/authenticate:
- *   put:
- *     summary: Method not allowed.
- *     tags:
- *       - Authentication
- *     responses:
- *       405:
- *         description: Method not allowed.
- *         headers:
- *           Allow:
- *             schema:
- *               type: string
- *               example: 'POST'
- *             description: The methods allowed at this endpoint.
- */
-router.put('/authenticate', sendStatus405('POST'));
-
-/**
- * @swagger
- * /admin/authenticate:
- *   delete:
- *     summary: Method not allowed.
- *     tags:
- *       - Authentication
- *     responses:
- *       405:
- *         description: Method not allowed.
- *         headers:
- *           Allow:
- *             schema:
- *               type: string
- *               example: 'POST'
- *             description: The methods allowed at this endpoint.
- */
-router.delete('/authenticate', sendStatus405('POST'));
-
-/**
- * @swagger
  * /admin/users:
  *   post:
- *     summary: Create new user.
+ *     summary: Create new user. (Must Be Admin)
  *     tags:
  *       - Users
  *     requestBody:
@@ -236,6 +124,18 @@ router.delete('/authenticate', sendStatus405('POST'));
  *         example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiYXV0aCI6ImFkbWluIiwiaWF0IjoxNjE2MzQ5MjMwLCJleHAiOjE2MTYzNDkyOTB9.EEL2OPAIWMgkeE8qh_0fMfSpYJhUkuafEebx7ffltZc
  *         required: true
  *     responses:
+ *       201:
+ *         description: The user was created successfully.
+ *         headers:
+ *           Location:
+ *             schema:
+ *               type: string
+ *               example: /cf52bde2-d3ff-4e2b-95f0-8461e0d70edc
+ *             description: URI to created user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  *       400:
  *         description: Missing/malformed fields.
  *         content:
@@ -255,6 +155,36 @@ router.delete('/authenticate', sendStatus405('POST'));
  *             
  */
 router.post('/users', permitRoles(Auth.ADMIN), archiveNeo4jUsers.createUser);
+
+/**
+ * @swagger
+ * /admin/users:
+ *   get:
+ *     summary: Retrieve a list of users. (Must Be Admin)
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         description: Authorization JSON Web Token.
+ *         schema:
+ *           type: string
+ *         example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiYXV0aCI6ImFkbWluIiwiaWF0IjoxNjE2MzQ5MjMwLCJleHAiOjE2MTYzNDkyOTB9.EEL2OPAIWMgkeE8qh_0fMfSpYJhUkuafEebx7ffltZc
+ *         required: true
+ *     responses:
+ *       401:
+ *         description: Invalid authentication token.
+ *         headers:
+ *           WWW-Authenticate:
+ *             schema:
+ *               type: string
+ *               example: Archivepelago Authentication
+ *             description: The authentication realm.
+ *       403:
+ *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
+ *             
+ */
+router.get('/users', permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUsers);
 
 
 /**

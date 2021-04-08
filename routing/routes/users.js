@@ -86,3 +86,20 @@ exports.authenticate = function(req, res, next){
             }
         })
 }
+
+const prepReturnUser = function(user){
+    const preppedUser = user.properties;
+    delete preppedUser.pwd;
+    return preppedUser;
+}
+
+exports.getUsers = function(req, res, next){
+    archiveNeo4jUsers.getUsers()
+        .then(users => {
+            if(!users.map) users = [users];
+            res.status(200).json(users.map(user => { return prepReturnUser(user);}));
+        })
+        .catch(error => {
+            return handleResourceError(error, next, req);
+        })
+}

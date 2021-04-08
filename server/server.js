@@ -9,12 +9,14 @@ global.__basedir = __dirname;
 
 const { errorHandler } = require("../middleware/errors");
 const admin = require('../routing/admin');
+const authenticate = require('../routing/authenticate');
 
 
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(uriConfig.api, authenticate);
 app.use(uriConfig.api + uriConfig.admin, admin);
 
 // eslint-disable-next-line no-undef
@@ -53,7 +55,7 @@ if(process.env.NODE_ENV !== 'test'){
 	const options = {
 		swaggerDefinition,
 		// Paths to files containing OpenAPI definitions
-		apis: ['./routing/api/*.js', './routing/admin/*.js'],
+		apis: ['./routing/api/*.js', './routing/admin/*.js', './routing/authenticate/*.js'],
 	};
 	
 	const swaggerSpec = swaggerJSDoc(options);
