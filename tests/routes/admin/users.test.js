@@ -24,9 +24,9 @@ afterAll(async () => {
     await destroyTestingDBs();
 });
 
-describe(`${uriConfig.admin}/authenticate Routes`, () => {
+describe(`${uriConfig.api + uriConfig.admin}/authenticate Routes`, () => {
     it(`should return http status of 405 with Allow header 'POST' on GET`, done => {
-        supertest(server).get(`${uriConfig.admin}/authenticate`)
+        supertest(server).get(`${uriConfig.api + uriConfig.admin}/authenticate`)
             .expect(405)
             .then(response => {
                 expect(response.headers.allow).toBe('POST');
@@ -38,7 +38,7 @@ describe(`${uriConfig.admin}/authenticate Routes`, () => {
     })
 
     it(`should return http status of 405 with Allow header 'POST' on PUT`, done => {
-        supertest(server).put(`${uriConfig.admin}/authenticate`)
+        supertest(server).put(`${uriConfig.api + uriConfig.admin}/authenticate`)
             .expect(405)
             .then(response => {
                 expect(response.headers.allow).toBe('POST');
@@ -50,7 +50,7 @@ describe(`${uriConfig.admin}/authenticate Routes`, () => {
     })
 
     it(`should return http status of 405 with Allow header 'POST' on DELETE`, done => {
-        supertest(server).delete(`${uriConfig.admin}/authenticate`)
+        supertest(server).delete(`${uriConfig.api + uriConfig.admin}/authenticate`)
             .expect(405)
             .then(response => {
                 expect(response.headers.allow).toBe('POST');
@@ -62,11 +62,10 @@ describe(`${uriConfig.admin}/authenticate Routes`, () => {
     })
 
     it(`should return http status of 401 with Authentication realm header on POST with invalid credentials`, done => {
-        supertest(server).post(`${uriConfig.admin}/authenticate`)
+        supertest(server).post(`${uriConfig.api + uriConfig.admin}/authenticate`)
             .send({email: faker.internet.email(), password: faker.internet.password()})
             .expect(401)
             .then(response => {
-                console.log(response.headers);
                 expect(response.headers['www-authenticate']).toBe(`Basic realm="${process.env.AUTH_REALM}"`)
                 done();
             })
@@ -76,7 +75,7 @@ describe(`${uriConfig.admin}/authenticate Routes`, () => {
     })
 
     it(`should return http status of 400 with required fields on POST without required fields`, done => {
-        supertest(server).post(`${uriConfig.admin}/authenticate`)
+        supertest(server).post(`${uriConfig.api + uriConfig.admin}/authenticate`)
             .expect(400)
             .then(response => {
                 expect(response.body.message).toBe(RoutingError.INVALID_REQUEST);
@@ -90,7 +89,7 @@ describe(`${uriConfig.admin}/authenticate Routes`, () => {
     })
 
     it(`should return http status of 200 with token on POST with valid credentials`, done => {
-        supertest(server).post(`${uriConfig.admin}/authenticate`)
+        supertest(server).post(`${uriConfig.api + uriConfig.admin}/authenticate`)
             .send({email: 'admin', password: 'admin'})
             .expect(200)
             .then(response => {

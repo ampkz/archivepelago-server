@@ -15,7 +15,7 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(uriConfig.admin, admin);
+app.use(uriConfig.api + uriConfig.admin, admin);
 
 // eslint-disable-next-line no-undef
 if(process.env.NODE_ENV !== 'test'){
