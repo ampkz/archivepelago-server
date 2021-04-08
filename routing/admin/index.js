@@ -122,8 +122,7 @@ const archiveNeo4jUsers = require('../routes/users');
  *             description: The authentication realm.
  *             
  */
-
- router.post('/authenticate', archiveNeo4jUsers.authenticate)
+router.post('/authenticate', archiveNeo4jUsers.authenticate)
 
 
 /**
@@ -186,6 +185,81 @@ router.delete('/authenticate', sendStatus405('POST'));
 /**
  * @swagger
  * /admin/users:
+ *   post:
+ *     summary: Create new user.
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 required: true
+ *                 type: string
+ *                 example: user@email.com
+ *                 description: User's email address.
+ *               firstName:
+ *                 required: true
+ *                 type: string
+ *                 example: Jane
+ *                 description: User's first name.
+ *               lastName:
+ *                 required: true
+ *                 type: string
+ *                 example: Doe
+ *                 description: User's last name.
+ *               secondName:
+ *                 required: false
+ *                 type: string
+ *                 example: Lilly
+ *                 description: User's second/middle name.
+ *               auth:
+ *                 required: true
+ *                 type: string
+ *                 enum: [admin, contributor]
+ *                 example: admin
+ *                 description: User's authentication role.
+ *               password:
+ *                 required: true
+ *                 type: string
+ *                 example: p4ssw0rd
+ *                 description: User's password.
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         description: Authorization JSON Web Token.
+ *         schema:
+ *           type: string
+ *         example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiYXV0aCI6ImFkbWluIiwiaWF0IjoxNjE2MzQ5MjMwLCJleHAiOjE2MTYzNDkyOTB9.EEL2OPAIWMgkeE8qh_0fMfSpYJhUkuafEebx7ffltZc
+ *         required: true
+ *     responses:
+ *       400:
+ *         description: Missing/malformed fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/FieldErrorMessage'
+ *       401:
+ *         description: Invalid authentication token.
+ *         headers:
+ *           WWW-Authenticate:
+ *             schema:
+ *               type: string
+ *               example: Archivepelago Authentication
+ *             description: The authentication realm.
+ *       403:
+ *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
+ *             
+ */
+router.post('/users', permitRoles(Auth.ADMIN), archiveNeo4jUsers.createUser);
+
+
+/**
+ * @swagger
+ * /admin/users:
  *   delete:
  *     summary: Method not allowed.
  *     tags:
@@ -221,4 +295,6 @@ router.delete('/users', sendStatus405('POST, GET'));
  */
 router.put('/users', sendStatus405('POST, GET'));
 
- module.exports = router;
+
+
+module.exports = router;

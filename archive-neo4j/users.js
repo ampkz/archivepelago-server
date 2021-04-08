@@ -3,6 +3,71 @@ const { UserError, DBError, InternalError, ArchiveError } = require('../_helpers
 const { connect, close, prepRecord, findResource, getResource, deleteResource } = require('./utils');
 const { getSessionOptions } = require('../_helpers/db');
 
+//nameObj should be an object with 'firstName', 'lastName', and (optionally) 'secondName' properties.
+//auth should be a role defined within the Auth class
+exports.createUser = function(email, nameObj, auth, pwd, saltRounds = 10){
+    
+    const promise = new Promise((resolve, reject) => {
+        (async () => {
+            let driver, sess;
+
+            try{
+                driver = connect();
+                // eslint-disable-next-line no-undef
+                sess = driver.session(getSessionOptions(process.env.USERS_DB));
+            }catch(e){
+                reject(new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e));
+                return;
+            }
+            
+            let user = null;
+    
+            try{
+                const match = await sess.run(`MATCH(u:USER { email: $email }) RETURN u`, { email });
+            
+                if(match.records.length >= 1){
+                    user = match.records[0].get(0).properties;
+                }
+            }catch(e){
+                await close(driver, sess);
+                reject(new InternalError(UserError.USER_SEARCH_ERROR, 1002, e));
+                return;
+            }
+    
+            if(user === null){
+                try{
+                    const pwdHash = await bcrypt.hash(pwd, saltRounds);
+                    const txc = sess.beginTransaction();
+                    
+                    const match = await txc.run(`CREATE(u:USER { id:apoc.create.uuid(), email: $email, firstName: $firstName, secondName: $secondName, lastName: $lastName, auth: $auth, pwd: $pwdHash}) RETURN u`, { firstName: nameObj.firstName, secondName: nameObj.secondName || '', lastName: nameObj.lastName, email, pwdHash, auth });
+                    
+                    if(match.records.length === 1){
+                        await txc.commit();
+                        user = prepRecord(match.records[0]);
+                        delete user.properties.pwd;
+                        resolve(user);
+                        return;
+                    }else{
+                        await txc.rollback();
+                        reject(new UserError(UserError.COULD_NOT_CREATE_NEW_USER, 2002));
+                        return;
+                    }
+                }catch(e){
+                    reject(new InternalError(UserError.COULD_NOT_CREATE_NEW_USER, 1003, e));
+                    return;
+                }finally{
+                    await close(driver, sess);
+                }
+            }else{
+                await close(driver, sess);
+                reject(new UserError(UserError.USER_ALREADY_EXISTS, 2001));
+                return;
+            }
+        })()
+    });
+
+    return promise;
+}
 
 exports.checkPassword = function(email, password){
     

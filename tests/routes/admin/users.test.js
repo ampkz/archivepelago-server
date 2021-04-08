@@ -127,4 +127,81 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
                     done(error);
                 })
     })
+
+    it(`should return http status of 400 with required fields on POST without required fields`, done => {
+        const token = signToken('admin', Auth.ADMIN, '60s');
+        supertest(server).post(`${uriConfig.api + uriConfig.admin}/users`)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(400)
+            .then(response => {
+                expect(response.body.message).toBe(RoutingError.INVALID_REQUEST);
+                expect(response.body.errors).toContainEqual({field: 'email', message: FieldError.REQUIRED});
+                expect(response.body.errors).toContainEqual({field: 'password', message: FieldError.REQUIRED});
+                expect(response.body.errors).toContainEqual({field: 'firstName', message: FieldError.REQUIRED});    
+                expect(response.body.errors).toContainEqual({field: 'lastName', message: FieldError.REQUIRED});
+                expect(response.body.errors).toContainEqual({field: 'auth', message: FieldError.REQUIRED});
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 400 with invalid type on POST with invalid role`, done => {
+        const email = faker.internet.email();
+        const password = faker.internet.password();
+        const firstName = faker.name.firstName();
+        const lastName = faker.name.lastName();
+        const secondName = faker.name.middleName();
+        const token = signToken('admin', Auth.ADMIN, '60s');
+        supertest(server).post(`${uriConfig.api + uriConfig.admin}/users`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({email, password, firstName, lastName, secondName, auth: 'invalid auth'})
+            .expect(400)
+            .then(response => {
+                expect(response.body.message).toBe(RoutingError.INVALID_REQUEST);
+                expect(response.body.errors).toContainEqual({field: 'auth', message: FieldError.INVALID_TYPE});
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 403 on POST with invalid authorization token`, done => {
+        supertest(server).post(`${uriConfig.api + uriConfig.admin}/users`)
+            .set('Authorization', `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiYXV0aCI6ImFkbWluIiwiaWF0IjoxNjE2MzQ5MjMwLCJleHAiOjE2MTYzNDkyOTB9.EEL2OPAIWMgkeE8qh_0fMfSpYJhUkuafEebx7ffltZc`) 
+            .expect(403)
+            .then(() => {
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 401 with Authorization realm header on POST without authorization header`, done => {
+        supertest(server).post(`${uriConfig.api + uriConfig.admin}/users`)
+            .expect(401)
+            .then(response => {
+                expect(response.headers['www-authenticate']).toBe(`Basic realm="${process.env.AUTH_REALM}"`);
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 403 on POST as contributor`, done => {
+        const token = signToken('admin', Auth.CONTRIBUTOR, '60s');
+        supertest(server).post(`${uriConfig.api + uriConfig.admin}/users`)
+            .set('Authorization', `Bearer ${token}`) 
+            .expect(403)
+            .then(() => {
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
 })
