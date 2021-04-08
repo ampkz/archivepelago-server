@@ -55,7 +55,7 @@ if(process.env.NODE_ENV !== 'test'){
 	const options = {
 		swaggerDefinition,
 		// Paths to files containing OpenAPI definitions
-		apis: ['./routing/api/*.js', './routing/admin/*.js', './routing/authenticate/*.js'],
+		apis: ['./routing/authenticate/*.js', './routing/api/*.js', './routing/admin/*.js'],
 	};
 	
 	const swaggerSpec = swaggerJSDoc(options);
