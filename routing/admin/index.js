@@ -77,6 +77,23 @@ const archiveNeo4jUsers = require('../routes/users');
  *     summary: Authenticate user.
  *     tags:
  *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 required: true
+ *                 type: string
+ *                 example: user@email.com
+ *                 description: User's email address.
+ *               password:
+ *                 required: true
+ *                 type: string
+ *                 example: p4ssw0rd
+ *                 description: User's password.
  *     responses:
  *       200:
  *         description: Authenticated token.
@@ -123,6 +140,7 @@ const archiveNeo4jUsers = require('../routes/users');
  *           Allow:
  *             schema:
  *               type: string
+ *               example: 'POST'
  *             description: The methods allowed at this endpoint.
  */
 router.get('/authenticate', sendStatus405('POST'));
@@ -141,6 +159,7 @@ router.get('/authenticate', sendStatus405('POST'));
  *           Allow:
  *             schema:
  *               type: string
+ *               example: 'POST'
  *             description: The methods allowed at this endpoint.
  */
 router.put('/authenticate', sendStatus405('POST'));
@@ -159,8 +178,47 @@ router.put('/authenticate', sendStatus405('POST'));
  *           Allow:
  *             schema:
  *               type: string
+ *               example: 'POST'
  *             description: The methods allowed at this endpoint.
  */
 router.delete('/authenticate', sendStatus405('POST'));
+
+/**
+ * @swagger
+ * /admin/users:
+ *   delete:
+ *     summary: Method not allowed.
+ *     tags:
+ *       - Users
+ *     responses:
+ *       405:
+ *         description: Method not allowed.
+ *         headers:
+ *           Allow:
+ *             schema:
+ *               type: string
+ *               example: 'POST'
+ *             description: The methods allowed at this endpoint.
+ */
+router.delete('/users', sendStatus405('POST, GET'));
+
+ /**
+ * @swagger
+ * /admin/users:
+ *   put:
+ *     summary: Method not allowed.
+ *     tags:
+ *       - Users
+ *     responses:
+ *       405:
+ *         description: Method not allowed.
+ *         headers:
+ *           Allow:
+ *             schema:
+ *               type: string
+ *               example: 'POST'
+ *             description: The methods allowed at this endpoint.
+ */
+router.put('/users', sendStatus405('POST, GET'));
 
  module.exports = router;

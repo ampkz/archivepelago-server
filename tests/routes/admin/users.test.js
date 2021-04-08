@@ -102,3 +102,29 @@ describe(`${uriConfig.api + uriConfig.admin}/authenticate Routes`, () => {
 
     })
 })
+
+describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
+    it(`should send http status of 405 with Allow header 'POST, GET' on PUT`, done => {
+        supertest(server).put(`${uriConfig.api + uriConfig.admin}/users`)
+            .expect(405)
+                .then(response => {
+                    expect(response.headers.allow).toBe('POST, GET');
+                    done();
+                })
+                .catch(error => {
+                    done(error);
+                })
+    })
+
+    it(`should send http status of 405 with Allow header 'POST, GET' on DELETE`, done => {
+        supertest(server).delete(`${uriConfig.api + uriConfig.admin}/users`)
+            .expect(405)
+                .then(response => {
+                    expect(response.headers.allow).toBe('POST, GET');
+                    done();
+                })
+                .catch(error => {
+                    done(error);
+                })
+    })
+})

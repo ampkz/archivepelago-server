@@ -40,11 +40,11 @@ if(process.env.NODE_ENV !== 'test'){
 		},
 		servers: [
 			{
-				url: 'http://localhost:3001',
+				url: 'http://localhost:3001/api',
 				description: 'Development server'
 			},
 			{
-				url: 'https://archivepelago.org',
+				url: 'https://archivepelago.org/api',
 				description: 'Production server',
 			},
 		]
