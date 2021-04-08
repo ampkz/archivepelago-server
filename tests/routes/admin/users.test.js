@@ -13,6 +13,7 @@ const uriConfig = require('../../../routing/uriConfig');
 const { RoutingError, ArchiveError, FieldError } = require("../../../_helpers/errors");
 const { signToken, Auth } = require("../../../_helpers/auth");
 const { sampleOne, gen } = require('testcheck');
+const faker = require('faker');
 // const archiveNeo4jUsers = require('../../../archive-neo4j/users');
 
 beforeAll(async () => {
@@ -58,5 +59,47 @@ describe(`${uriConfig.admin}/authenticate Routes`, () => {
             .catch(error => {
                 done(error);
             })
+    })
+
+    it(`should return http status of 401 with Authentication realm header on POST with invalid credentials`, done => {
+        supertest(server).post(`${uriConfig.admin}/authenticate`)
+            .send({email: faker.internet.email(), password: faker.internet.password()})
+            .expect(401)
+            .then(response => {
+                console.log(response.headers);
+                expect(response.headers['www-authenticate']).toBe(`Basic realm="${process.env.AUTH_REALM}"`)
+                done();
+            })
+            .catch(error => {
+                done(error);
+            });
+    })
+
+    it(`should return http status of 400 with required fields on POST without required fields`, done => {
+        supertest(server).post(`${uriConfig.admin}/authenticate`)
+            .expect(400)
+            .then(response => {
+                expect(response.body.message).toBe(RoutingError.INVALID_REQUEST);
+                expect(response.body.errors).toContainEqual({field: 'email', message: FieldError.REQUIRED});
+                expect(response.body.errors).toContainEqual({field: 'password', message: FieldError.REQUIRED});    
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 200 with token on POST with valid credentials`, done => {
+        supertest(server).post(`${uriConfig.admin}/authenticate`)
+            .send({email: 'admin', password: 'admin'})
+            .expect(200)
+            .then(response => {
+                expect(response.body.token).toMatch(/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$/);
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+
     })
 })
