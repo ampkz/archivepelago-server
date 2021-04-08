@@ -166,6 +166,14 @@ router.post('/users', permitRoles(Auth.ADMIN), archiveNeo4jUsers.createUser);
  *     security:
  *       - bearerAuth: []
  *     responses:
+ *       200:
+ *         description: A list of retrieved users.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  *       401:
  *         description: Invalid authentication token.
  *         headers:

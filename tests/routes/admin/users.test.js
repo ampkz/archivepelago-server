@@ -10,7 +10,7 @@ const server = require('../../../server/server');
 const { serverInit, destroyTestingDBs } = require('../../../server/utils');
 const supertest = require("supertest");
 const uriConfig = require('../../../routing/uriConfig');
-const { RoutingError, ArchiveError, FieldError } = require("../../../_helpers/errors");
+const { RoutingError, FieldError } = require("../../../_helpers/errors");
 const { signToken, Auth } = require("../../../_helpers/auth");
 const faker = require('faker');
 const archiveNeo4jUsers = require('../../../archive-neo4j/users');
@@ -267,5 +267,25 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
             })
     })
 
+    it(`should return http status of 200 with list of users on GET`, async done => {
+        const token = signToken('admin', Auth.ADMIN, '60s');
+        let user;
+        try{
+            user = await archiveNeo4jUsers.createUser(faker.internet.email(), {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.ADMIN, faker.internet.password())
+        }catch(e){
+            console.log(e);
+        }
+        supertest(server).get(`${uriConfig.api + uriConfig.admin}/users`)
+            .set('Authorization', `Bearer ${token}`) 
+            .expect(200)
+            .then(response => {
+                expect(Array.isArray(response.body)).toBeTruthy();
+                expect(response.body).toContainEqual(user.properties)
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
     
 })
