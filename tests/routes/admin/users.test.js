@@ -11,7 +11,6 @@ const { serverInit, destroyTestingDBs } = require('../../../server/utils');
 const supertest = require("supertest");
 const uriConfig = require('../../../routing/uriConfig');
 const { RoutingError, FieldError } = require("../../../_helpers/errors");
-const { signToken, Auth } = require("../../../_helpers/auth");
 const faker = require('faker');
 const archiveNeo4jUsers = require('../../../archive-neo4j/users');
 
@@ -92,7 +91,7 @@ describe(`${uriConfig.api}/authenticate Routes`, () => {
             .send({email: 'admin', password: 'admin'})
             .expect(200)
             .then(response => {
-                expect(response.body).toBe({jwt: 'set'});
+                expect(response.body).toEqual({jwt: 'set'});
                 done();
             })
             .catch(error => {
@@ -126,10 +125,10 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
                 })
     })
 
-    it(`should return http status of 400 with required fields on POST without required fields`, done => {
-        const token = signToken('admin', Auth.ADMIN, '60s');
-        supertest(server).post(`${uriConfig.api + uriConfig.admin}/users`)
-            .set('Authorization', `Bearer ${token}`)
+    it(`should return http status of 400 with required fields on POST without required fields`, async done => {
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+        agent.post(`${uriConfig.api + uriConfig.admin}/users`)
             .expect(400)
             .then(response => {
                 expect(response.body.message).toBe(RoutingError.INVALID_REQUEST);
@@ -145,15 +144,15 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
             })
     })
 
-    it(`should return http status of 400 with invalid type on POST with invalid role`, done => {
+    it(`should return http status of 400 with invalid type on POST with invalid role`, async done => {
         const email = faker.internet.email();
         const password = faker.internet.password();
         const firstName = faker.name.firstName();
         const lastName = faker.name.lastName();
         const secondName = faker.name.middleName();
-        const token = signToken('admin', Auth.ADMIN, '60s');
-        supertest(server).post(`${uriConfig.api + uriConfig.admin}/users`)
-            .set('Authorization', `Bearer ${token}`)
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+        agent.post(`${uriConfig.api + uriConfig.admin}/users`)
             .send({email, password, firstName, lastName, secondName, auth: 'invalid auth'})
             .expect(400)
             .then(response => {
@@ -166,16 +165,16 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
             })
     })
 
-    it(`should return http status of 201 with Location header on POST`, done => {
+    it(`should return http status of 201 with Location header on POST`, async done => {
         const email = faker.internet.email();
         const password = faker.internet.password();
         const firstName = faker.name.firstName();
         const lastName = faker.name.lastName();
         const secondName = faker.name.middleName();
         const auth = Auth.ADMIN;
-        const token = signToken('admin', Auth.ADMIN, '60s');
-        supertest(server).post(`${uriConfig.api + uriConfig.admin}/users`)
-            .set('Authorization', `Bearer ${token}`)
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+        agent.post(`${uriConfig.api + uriConfig.admin}/users`)
             .send({email, password, firstName, lastName, secondName, auth})
             .expect(201)
             .then(response => {
@@ -185,18 +184,6 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
                 expect(response.body.lastName).toBe(lastName);
                 expect(response.body.secondName).toBe(secondName);
                 expect(response.body.auth).toBe(auth);
-                done();
-            })
-            .catch(error => {
-                done(error);
-            })
-    })
-
-    it(`should return http status of 403 on POST with invalid authorization token`, done => {
-        supertest(server).post(`${uriConfig.api + uriConfig.admin}/users`)
-            .set('Authorization', `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiYXV0aCI6ImFkbWluIiwiaWF0IjoxNjE2MzQ5MjMwLCJleHAiOjE2MTYzNDkyOTB9.EEL2OPAIWMgkeE8qh_0fMfSpYJhUkuafEebx7ffltZc`) 
-            .expect(403)
-            .then(() => {
                 done();
             })
             .catch(error => {
@@ -216,10 +203,13 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
             })
     })
 
-    it(`should return http status of 403 on POST as contributor`, done => {
-        const token = signToken('admin', Auth.CONTRIBUTOR, '60s');
-        supertest(server).post(`${uriConfig.api + uriConfig.admin}/users`)
-            .set('Authorization', `Bearer ${token}`) 
+    it(`should return http status of 403 on POST as contributor`, async done => {
+        const email = faker.internet.email();
+        const password = faker.internet.password();
+        await archiveNeo4jUsers.createUser(email, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, password)
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
+        agent.post(`${uriConfig.api + uriConfig.admin}/users`)
             .expect(403)
             .then(() => {
                 done();
@@ -241,22 +231,13 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
             })
     })
 
-    it(`should return http status of 403 on GET with invalid authorization token`, done => {
-        supertest(server).get(`${uriConfig.api + uriConfig.admin}/users`)
-            .set('Authorization', `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiYXV0aCI6ImFkbWluIiwiaWF0IjoxNjE2MzQ5MjMwLCJleHAiOjE2MTYzNDkyOTB9.EEL2OPAIWMgkeE8qh_0fMfSpYJhUkuafEebx7ffltZc`) 
-            .expect(403)
-            .then(() => {
-                done();
-            })
-            .catch(error => {
-                done(error);
-            })
-    })
-
-    it(`should return http status of 403 on GET as contributor`, done => {
-        const token = signToken('admin', Auth.CONTRIBUTOR, '60s');
-        supertest(server).get(`${uriConfig.api + uriConfig.admin}/users`)
-            .set('Authorization', `Bearer ${token}`) 
+    it(`should return http status of 403 on GET as contributor`, async done => {
+        const email = faker.internet.email();
+        const password = faker.internet.password();
+        await archiveNeo4jUsers.createUser(email, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, password)
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
+        agent.get(`${uriConfig.api + uriConfig.admin}/users`)
             .expect(403)
             .then(() => {
                 done();
@@ -267,15 +248,16 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
     })
 
     it(`should return http status of 200 with list of users on GET`, async done => {
-        const token = signToken('admin', Auth.ADMIN, '60s');
+        
         let user;
         try{
             user = await archiveNeo4jUsers.createUser(faker.internet.email(), {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.ADMIN, faker.internet.password())
         }catch(e){
             console.log(e);
         }
-        supertest(server).get(`${uriConfig.api + uriConfig.admin}/users`)
-            .set('Authorization', `Bearer ${token}`) 
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+        agent.get(`${uriConfig.api + uriConfig.admin}/users`)
             .expect(200)
             .then(response => {
                 expect(Array.isArray(response.body)).toBeTruthy();

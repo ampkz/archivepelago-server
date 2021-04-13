@@ -3,6 +3,7 @@ const express = require('express');
 const helmet = require('helmet');
 const app = express();
 const uriConfig = require('../routing/uriConfig');
+const cookieParser = require('cookie-parser');
 
 // eslint-disable-next-line no-undef
 global.__basedir = __dirname;
@@ -11,7 +12,7 @@ const { errorHandler } = require("../middleware/errors");
 const admin = require('../routing/admin');
 const authenticate = require('../routing/authenticate');
 
-
+app.use(cookieParser());
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
