@@ -11,6 +11,7 @@ const { serverInit, destroyTestingDBs } = require('../../../server/utils');
 const supertest = require("supertest");
 const uriConfig = require('../../../routing/uriConfig');
 const { RoutingError, FieldError } = require("../../../_helpers/errors");
+const { Auth } = require("../../../_helpers/auth");
 const faker = require('faker');
 const archiveNeo4jUsers = require('../../../archive-neo4j/users');
 
@@ -89,9 +90,8 @@ describe(`${uriConfig.api}/authenticate Routes`, () => {
     it(`should return http status of 200 with token on POST with valid credentials`, done => {
         supertest(server).post(`${uriConfig.api}/authenticate`)
             .send({email: 'admin', password: 'admin'})
-            .expect(200)
-            .then(response => {
-                expect(response.body).toEqual({jwt: 'set'});
+            .expect(204)
+            .then(() => {
                 done();
             })
             .catch(error => {
