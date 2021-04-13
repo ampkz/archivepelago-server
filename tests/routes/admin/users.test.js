@@ -92,13 +92,12 @@ describe(`${uriConfig.api}/authenticate Routes`, () => {
             .send({email: 'admin', password: 'admin'})
             .expect(200)
             .then(response => {
-                expect(response.body.token).toMatch(/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$/);
+                expect(response.body).toBe({jwt: 'set'});
                 done();
             })
             .catch(error => {
                 done(error);
             })
-
     })
 })
 

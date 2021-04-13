@@ -5,8 +5,8 @@ const { Auth } = require('../_helpers/auth');
 function permitRoles(...rolesPermitted) {
     return (req, res, next) => {
         try{
-            if(req.headers.authorization){
-                const token = req.headers.authorization.split(" ")[1];
+            if(req.cookies.jwt){
+                const token = req.cookies.jwt;
                 
                 // eslint-disable-next-line no-undef
                 jwt.verify(token, process.env.TOKEN_SECRET, function(err, decoded){
