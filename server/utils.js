@@ -3,10 +3,47 @@ require('dotenv').config();
 const { connect, close } = require("../archive-neo4j/utils");
 const { Auth } = require('../_helpers/auth');
 const { Archive } = require('../_helpers/archive');
-const bcrypt = require('bcrypt');
 const { getSessionOptions } = require('../_helpers/db');
+const readline = require('readline');
+const Writable = require('stream').Writable;
+const archiveNeo4jUsers = require('../archive-neo4j/users');
 
-exports.serverInit = function (logging=true){
+let mutableStdout = new Writable({
+    write: function(chunk, encoding, callback) {
+        if (!this.muted)
+        process.stdout.write(chunk, encoding);
+        callback();
+    }
+});
+
+mutableStdout.muted = false;
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: mutableStdout,
+    terminal: true
+})
+
+const fieldQ = (field) => {
+    return new Promise((resolve) => {
+            rl.question(`Please enter admin ${field}: `, (answer) => {
+            resolve(answer);
+        });
+    });
+}
+
+const pwdQ = (verify=false) => {
+    return new Promise((resolve) => {
+            mutableStdout.muted = false;
+            rl.question(`Please ${verify ? 'verify' : 'enter'} admin password: `, (answer) => {
+            resolve(answer);
+        });
+        mutableStdout.muted = true;
+    });
+}
+
+
+exports.serverInit = function (logging=true, defaultAdmin = false){
     
     const promise = new Promise ((resolve, reject) => {
         (async () => {
@@ -47,27 +84,46 @@ exports.serverInit = function (logging=true){
             try{
                 session = driver.session(getSessionOptions(process.env.USERS_DB));
                 match = await session.run('MATCH(u:USER { auth: $auth }) RETURN u', {auth: Auth.ADMIN});
-
+                
                 if(match.records.length >= 1) {
                     await close(driver, session);
-                    reject("Server has already been initialized.");
+                    reject("Admin already exists.");
                     return;
                 }else{
-                    const pwdHash = await bcrypt.hash('admin', 10);
-                    const txc = session.beginTransaction();
-
-                    match = await txc.run(`CREATE(u:USER { id:apoc.create.uuid(), email: $email, auth: $auth, pwd: $pwdHash }) return u`, { email: 'admin', auth: Auth.ADMIN, pwdHash});
-                    if(match.records.length === 1){
-                        await txc.commit();
-                        await close(driver, session);
-                        resolve("Successfully Initialized Server");
-                        return;
+                    if(defaultAdmin){
+                        try{
+                            const user = await archiveNeo4jUsers.createUser('admin', {firstName: 'admin', lastName: 'admin'}, Auth.ADMIN, 'admin');
+                            resolve(user);
+                            return;
+                        }catch(e){
+                            reject(e);
+                            return;
+                        }finally{
+                            await close(driver, session);
+                        }
                     }else{
-                        const records = match.records;
-                        await txc.rollback();
-                        await close(driver, session);
-                        reject({ error: records });
-                        return;
+                        const email = await fieldQ('email');
+                        const firstName = await fieldQ('first name');
+                        const secondName = await fieldQ('second/middle name (leave blank if none)');
+                        const lastName = await fieldQ('last name');
+                        let password = '';
+                        let confirmPassword = ' ';
+                        do{
+                            password = await pwdQ(false);
+                            confirmPassword = await pwdQ(true);
+                            if(password !== confirmPassword) console.log('\nPasswords do not match. Try Again.');
+                        }while(password !== confirmPassword)
+
+                        try{
+                            await archiveNeo4jUsers.createUser(email, {firstName, lastName, secondName}, Auth.ADMIN, password);
+                            resolve('\nSuccessfully created admin.');
+                            return;
+                        }catch(e){
+                            reject(e);
+                            return;
+                        }finally{
+                            await close(driver, session);
+                        }
                     }
                 }
             }catch(e){
@@ -88,7 +144,6 @@ exports.destroyTestingDBs = function(){
             let session = driver.session({database: `${process.env.ARCHIVE_DB}test`});
 
             try{
-                await session.run('CALL apoc.trigger.removeAll()');
                 await session.run(`DROP DATABASE ${process.env.USERS_DB}test IF EXISTS DESTROY DATA WAIT`);
                 await session.run(`DROP DATABASE ${process.env.ARCHIVE_DB}test IF EXISTS DESTROY DATA WAIT`);
                 resolve();

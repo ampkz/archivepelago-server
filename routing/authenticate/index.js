@@ -29,17 +29,8 @@ const archiveNeo4jUsers = require('../routes/users');
  *                 example: p4ssw0rd
  *                 description: User's password.
  *     responses:
- *       200:
- *         description: Authenticated token.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *                   description: Authenticated JSON Web Token.
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiYXV0aCI6ImFkbWluIiwiaWF0IjoxNjE2MzQ5MjMwLCJleHAiOjE2MTYzNDkyOTB9.EEL2OPAIWMgkeE8qh_0fMfSpYJhUkuafEebx7ffltZc
+ *       204:
+ *         description: Cookie was set successfully.
  *       400:
  *         description: Missing/malformed fields.
  *         content:

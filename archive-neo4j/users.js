@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
-const { UserError, DBError, InternalError, ArchiveError } = require('../_helpers/errors');
-const { connect, close, prepRecord, findResource, getResource, deleteResource } = require('./utils');
+const { UserError, DBError, InternalError } = require('../_helpers/errors');
+const { connect, close, prepRecord, findResource, getResource } = require('./utils');
 const { getSessionOptions } = require('../_helpers/db');
 
 //nameObj should be an object with 'firstName', 'lastName', and (optionally) 'secondName' properties.

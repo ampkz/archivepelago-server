@@ -10,10 +10,10 @@ const archiveNeo4jUsers = require('../routes/users');
  * @swagger
  * components:
  *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
+ *     cookieAuth:
+ *       type: apiKey
+ *       in: cookie
+ *       name: jwt
  *   schemas:
  *     User:
  *       type: object
@@ -122,7 +122,7 @@ const archiveNeo4jUsers = require('../routes/users');
  *                 example: p4ssw0rd
  *                 description: User's password.
  *     security:
- *       - bearerAuth: []
+ *       - cookieAuth: []
  *     responses:
  *       201:
  *         description: The user was created successfully.
@@ -164,7 +164,7 @@ router.post('/users', permitRoles(Auth.ADMIN), archiveNeo4jUsers.createUser);
  *     tags:
  *       - Users
  *     security:
- *       - bearerAuth: []
+ *       - cookieAuth: []
  *     responses:
  *       200:
  *         description: A list of retrieved users.

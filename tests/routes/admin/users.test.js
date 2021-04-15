@@ -16,7 +16,7 @@ const faker = require('faker');
 const archiveNeo4jUsers = require('../../../archive-neo4j/users');
 
 beforeAll(async () => {
-    await serverInit(false);
+    await serverInit(false, true);
 });
 
 afterAll(async () => {
