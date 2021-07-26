@@ -87,7 +87,7 @@ describe(`${uriConfig.api}/authenticate Routes`, () => {
             })
     })
 
-    it(`should return http status of 200 with token on POST with valid credentials`, done => {
+    it(`should return http status of 204 on POST with valid credentials`, done => {
         supertest(server).post(`${uriConfig.api}/authenticate`)
             .send({email: 'admin', password: 'admin'})
             .expect(204)

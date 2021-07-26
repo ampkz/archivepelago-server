@@ -39,7 +39,7 @@ Follow the instructions below to install Neo4j, being sure to install the correc
   * Add Neo4j's repository:
     ```bash
     wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo apt-key add -
-    echo 'deb https://debian.neo4j.com stable 4.2' | sudo tee -a /etc/apt/sources.list.d/neo4j.list
+    echo 'deb https://debian.neo4j.com stable 4.3' | sudo tee -a /etc/apt/sources.list.d/neo4j.list
     sudo apt update
     ```
   * Enable `universe` repository
@@ -48,7 +48,7 @@ Follow the instructions below to install Neo4j, being sure to install the correc
     ```
   * Install Neo4j Enterprise Edition:
      ```bash
-     sudo apt-get install neo4j-enterprise=1:4.2.3
+     sudo apt-get install neo4j-enterprise=1:4.3.2
      ```
 * Set Neo4j Password:
   ```bash
@@ -63,7 +63,7 @@ Follow the instructions below to install Neo4j, being sure to install the correc
 * [Install the APOC Plugin:](http://https://neo4j.com/labs/apoc/4.1/installation/ "Install the APOC plugin")
   * Move or copy the APOC jar file from the `$NEO4J_HOME/labs` directory to the `$NEO4J_HOME/plugins` directory:
     ```bash
-    sudo cp /var/lib/neo4j/labs/apoc-4.2.0.1-core.jar /var/lib/neo4j/plugins
+    sudo cp /var/lib/neo4j/labs/apoc-4.3.0.0-core.jar /var/lib/neo4j/plugins
      ```
   * Restart Neo4j:
     ```bash
