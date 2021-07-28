@@ -368,5 +368,26 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId Routes`, () => {
             })
     })
 
+    it.only(`should return http status of 200 with users on GET with authorization cookie`, async done => {
+        let user;
+        try{
+            user = await archiveNeo4jUsers.createUser(faker.internet.email(), {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.ADMIN, faker.internet.password())
+        }catch(e){
+            console.log(e);
+        }
+        console.log(user);
+        // const agent = supertest.agent(server);
+        // await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+        // agent.get(`${uriConfig.api + uriConfig.admin}/users`)
+        //     .expect(200)
+        //     .then(response => {
+        //         expect(Array.isArray(response.body)).toBeTruthy();
+        //         expect(response.body).toContainEqual(user.properties)
+        //         done();
+        //     })
+        //     .catch(error => {
+        //         done(error);
+        //     })
+    })
 
 });
