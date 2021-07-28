@@ -165,7 +165,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
             })
     })
 
-    it(`should return http status of 201 with Location header on POST`, async done => {
+    it(`should return http status of 201 with Location header on POST with authorization cookie`, async done => {
         const email = faker.internet.email();
         const password = faker.internet.password();
         const firstName = faker.name.firstName();
@@ -191,7 +191,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
             })
     })
 
-    it(`should return http status of 401 with Authorization realm header on POST without authorization header`, done => {
+    it(`should return http status of 401 with Authorization realm header on POST without authorization cookie`, done => {
         supertest(server).post(`${uriConfig.api + uriConfig.admin}/users`)
             .expect(401)
             .then(response => {
@@ -219,7 +219,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
             })
     })
 
-    it(`should return http status of 401 with Authorization realm header on GET without authorization header`, done => {
+    it(`should return http status of 401 with Authorization realm header on GET without authorization cookie`, done => {
         supertest(server).get(`${uriConfig.api + uriConfig.admin}/users`)
             .expect(401)
             .then(response => {
@@ -247,7 +247,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
             })
     })
 
-    it(`should return http status of 200 with list of users on GET`, async done => {
+    it(`should return http status of 200 with list of users on GET with authorization cookie`, async done => {
         
         let user;
         try{
@@ -270,3 +270,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
     })
     
 })
+
+describe(`${uriConfig.api + uriConfig.admin}/users/:userId Routes`, () => {
+    it(`should return http status of 401 `)
+});
