@@ -269,6 +269,12 @@ router.post('/users/:userId', sendStatus405('GET, DELETE, PUT'));
  *     tags:
  *       - Users
  *     responses:
+ *       200:
+ *         description: Retrieved user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  *       401:
  *         description: Invalid authentication token.
  *         headers:
@@ -281,7 +287,7 @@ router.post('/users/:userId', sendStatus405('GET, DELETE, PUT'));
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
  * 
  */
-router.get('/users/:userId', permitRoles(Auth.ADMIN), ()=>{});
+router.get('/users/:userId', permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUser);
 
 /**
  * @swagger

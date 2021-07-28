@@ -105,3 +105,15 @@ exports.getUsers = function(req, res, next){
             return handleResourceError(error, next, req);
         })
 }
+
+exports.getUser = function(req, res, next){
+    const { userId } = req.params;
+
+    archiveNeo4jUsers.getUser(userId)
+        .then(user => {
+            res.status(200).json(prepReturnUser(user))
+        })
+        .catch(error => {
+            return handleResourceError(error, next, req);
+        })
+}

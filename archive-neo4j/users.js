@@ -121,3 +121,8 @@ exports.getUsers = function(){
     // eslint-disable-next-line no-undef
     return getResource(findResource, [`MATCH (u:USER) RETURN u`, {}, null, process.env.USERS_DB], [0], process.env.USERS_DB);
 }
+
+exports.getUser = function(id){
+    // eslint-disable-next-line no-undef
+    return getResource(findResource, ['MATCH (u:USER {id: $id}) RETURN u', {id}, null, process.env.USERS_DB]);
+}

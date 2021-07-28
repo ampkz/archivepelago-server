@@ -375,19 +375,17 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId Routes`, () => {
         }catch(e){
             console.log(e);
         }
-        console.log(user);
-        // const agent = supertest.agent(server);
-        // await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-        // agent.get(`${uriConfig.api + uriConfig.admin}/users`)
-        //     .expect(200)
-        //     .then(response => {
-        //         expect(Array.isArray(response.body)).toBeTruthy();
-        //         expect(response.body).toContainEqual(user.properties)
-        //         done();
-        //     })
-        //     .catch(error => {
-        //         done(error);
-        //     })
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+        agent.get(`${uriConfig.api + uriConfig.admin}/users/${user.properties.id}`)
+            .expect(200)
+            .then(response => {
+                expect(response.body).toEqual(user.properties)
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
     })
 
 });
