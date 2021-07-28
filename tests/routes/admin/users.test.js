@@ -388,7 +388,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId Routes`, () => {
             })
     })
 
-    it.only(`should return http status of 204 on DELETE with authorization cookie`, async done => {
+    it(`should return http status of 204 on DELETE with authorization cookie`, async done => {
         let user;
         try{
             user = await archiveNeo4jUsers.createUser(faker.internet.email(), {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.ADMIN, faker.internet.password())
@@ -400,6 +400,19 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId Routes`, () => {
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
         agent.delete(`${uriConfig.api + uriConfig.admin}/users/${user.properties.id}`)
             .expect(204)
+            .then(() => {
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 404 on DELETE with unknown userid and authorization cookie`, async done => {
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+        agent.delete(`${uriConfig.api + uriConfig.admin}/users/userid`)
+            .expect(404)
             .then(() => {
                 done();
             })
