@@ -283,4 +283,90 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId Routes`, () => {
                 done(error);
             })
     })
+
+    it(`should return http status of 401 with Authorization realm header on GET without authorization cookie`, done => {
+        supertest(server).get(`${uriConfig.api + uriConfig.admin}/users/userId`)
+            .expect(401)
+            .then(response => {
+                expect(response.headers['www-authenticate']).toBe(`Basic realm="${process.env.AUTH_REALM}"`);
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 401 with Authorization realm header on PUT without authorization cookie`, done => {
+        supertest(server).put(`${uriConfig.api + uriConfig.admin}/users/userId`)
+            .expect(401)
+            .then(response => {
+                expect(response.headers['www-authenticate']).toBe(`Basic realm="${process.env.AUTH_REALM}"`);
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 401 with Authorization realm header on DELETE without authorization cookie`, done => {
+        supertest(server).delete(`${uriConfig.api + uriConfig.admin}/users/userId`)
+            .expect(401)
+            .then(response => {
+                expect(response.headers['www-authenticate']).toBe(`Basic realm="${process.env.AUTH_REALM}"`);
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 403 on GET as contributor`, async done => {
+        const email = faker.internet.email();
+        const password = faker.internet.password();
+        await archiveNeo4jUsers.createUser(email, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, password)
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
+        agent.get(`${uriConfig.api + uriConfig.admin}/users/userId`)
+            .expect(403)
+            .then(() => {
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 403 on DELETE as contributor`, async done => {
+        const email = faker.internet.email();
+        const password = faker.internet.password();
+        await archiveNeo4jUsers.createUser(email, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, password)
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
+        agent.delete(`${uriConfig.api + uriConfig.admin}/users/userId`)
+            .expect(403)
+            .then(() => {
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 403 on PUT as contributor`, async done => {
+        const email = faker.internet.email();
+        const password = faker.internet.password();
+        await archiveNeo4jUsers.createUser(email, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, password)
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
+        agent.put(`${uriConfig.api + uriConfig.admin}/users/userId`)
+            .expect(403)
+            .then(() => {
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+
 });

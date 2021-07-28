@@ -251,6 +251,92 @@ router.put('/users', sendStatus405('POST, GET'));
  *               example: 'GET, DELETE, PUT'
  *             description: The methods allowed at this endpoint.
  */
- router.post('/users/:userId', sendStatus405('GET, DELETE, PUT'));
+router.post('/users/:userId', sendStatus405('GET, DELETE, PUT'));
+
+
+ /**
+ * @swagger
+ * /admin/users/{userid}:
+ *   get:
+ *     summary: Get user by userId
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID of the user
+ *     tags:
+ *       - Users
+ *     responses:
+ *       401:
+ *         description: Invalid authentication token.
+ *         headers:
+ *           WWW-Authenticate:
+ *             schema:
+ *               type: string
+ *               example: Archivepelago Authentication
+ *             description: The authentication realm.
+ *       403:
+ *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
+ * 
+ */
+router.get('/users/:userId', permitRoles(Auth.ADMIN), ()=>{});
+
+/**
+ * @swagger
+ * /admin/users/{userid}:
+ *   put:
+ *     summary: Update user
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID of the user
+ *     tags:
+ *       - Users
+ *     responses:
+ *       401:
+ *         description: Invalid authentication token.
+ *         headers:
+ *           WWW-Authenticate:
+ *             schema:
+ *               type: string
+ *               example: Archivepelago Authentication
+ *             description: The authentication realm.
+ *       403:
+ *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
+ */
+ router.put('/users/:userId', permitRoles(Auth.ADMIN), ()=>{});
+
+/**
+ * @swagger
+ * /admin/users/{userid}:
+ *   delete:
+ *     summary: Delete user
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID of the user
+ *     tags:
+ *       - Users
+ *     responses:
+ *       401:
+ *         description: Invalid authentication token.
+ *         headers:
+ *           WWW-Authenticate:
+ *             schema:
+ *               type: string
+ *               example: Archivepelago Authentication
+ *             description: The authentication realm.
+ *       403:
+ *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
+ */
+ router.delete('/users/:userId', permitRoles(Auth.ADMIN), ()=>{});
 
 module.exports = router;
