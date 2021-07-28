@@ -238,7 +238,7 @@ router.put('/users', sendStatus405('POST, GET'));
  *         schema:
  *           type: string
  *         required: true
- *         description: UUID of the user
+ *         description: UUID of the user.
  *     tags:
  *       - Users
  *     responses:
@@ -258,14 +258,14 @@ router.post('/users/:userId', sendStatus405('GET, DELETE, PUT'));
  * @swagger
  * /admin/users/{userid}:
  *   get:
- *     summary: Get user by userId
+ *     summary: Get user by userId.
  *     parameters:
  *       - in: path
  *         name: userId
  *         schema:
  *           type: string
  *         required: true
- *         description: UUID of the user
+ *         description: UUID of the user.
  *     tags:
  *       - Users
  *     responses:
@@ -293,14 +293,14 @@ router.get('/users/:userId', permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUser)
  * @swagger
  * /admin/users/{userid}:
  *   put:
- *     summary: Update user
+ *     summary: Update user.
  *     parameters:
  *       - in: path
  *         name: userId
  *         schema:
  *           type: string
  *         required: true
- *         description: UUID of the user
+ *         description: UUID of the user.
  *     tags:
  *       - Users
  *     responses:
@@ -321,17 +321,19 @@ router.get('/users/:userId', permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUser)
  * @swagger
  * /admin/users/{userid}:
  *   delete:
- *     summary: Delete user
+ *     summary: Delete user.
  *     parameters:
  *       - in: path
  *         name: userId
  *         schema:
  *           type: string
  *         required: true
- *         description: UUID of the user
+ *         description: UUID of the user.
  *     tags:
  *       - Users
  *     responses:
+ *       204:
+ *         description: User was deleted successfully.
  *       401:
  *         description: Invalid authentication token.
  *         headers:
@@ -343,6 +345,6 @@ router.get('/users/:userId', permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUser)
  *       403:
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
  */
- router.delete('/users/:userId', permitRoles(Auth.ADMIN), ()=>{});
+ router.delete('/users/:userId', permitRoles(Auth.ADMIN), archiveNeo4jUsers.deleteUser);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const { UserError, DBError, InternalError } = require('../_helpers/errors');
-const { connect, close, prepRecord, findResource, getResource } = require('./utils');
+const { connect, close, prepRecord, findResource, getResource, deleteResource } = require('./utils');
 const { getSessionOptions } = require('../_helpers/db');
 
 //nameObj should be an object with 'firstName', 'lastName', and (optionally) 'secondName' properties.
@@ -125,4 +125,9 @@ exports.getUsers = function(){
 exports.getUser = function(id){
     // eslint-disable-next-line no-undef
     return getResource(findResource, ['MATCH (u:USER {id: $id}) RETURN u', {id}, null, process.env.USERS_DB]);
+}
+
+exports.deleteUser = function(id){
+    // eslint-disable-next-line no-undef
+    return deleteResource(findResource, ['MATCH (u:USER {id: $id}) RETURN u', {id}, null, process.env.USERS_DB], 'MATCH (u:USER {id: $id}) DELETE u RETURN u', {id}, 1, null, process.env.USERS_DB);
 }

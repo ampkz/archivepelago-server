@@ -117,3 +117,15 @@ exports.getUser = function(req, res, next){
             return handleResourceError(error, next, req);
         })
 }
+
+exports.deleteUser = function(req, res, next){
+    const { userId } = req.params;
+
+    archiveNeo4jUsers.deleteUser(userId)
+        .then( () => {
+            res.status(204).end();
+        })
+        .catch(error => {
+            return handleResourceError(error, next, req);
+        })
+}
