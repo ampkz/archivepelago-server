@@ -227,6 +227,30 @@ router.delete('/users', sendStatus405('POST, GET'));
  */
 router.put('/users', sendStatus405('POST, GET'));
 
-
+/**
+ * @swagger
+ * /admin/users/{userid}:
+ *   post:
+ *     summary: Method not allowed.
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID of the user
+ *     tags:
+ *       - Users
+ *     responses:
+ *       405:
+ *         description: Method not allowed.
+ *         headers:
+ *           Allow:
+ *             schema:
+ *               type: string
+ *               example: 'GET, DELETE, PUT'
+ *             description: The methods allowed at this endpoint.
+ */
+ router.post('/users/:userId', sendStatus405('GET, DELETE, PUT'));
 
 module.exports = router;

@@ -272,5 +272,15 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
 })
 
 describe(`${uriConfig.api + uriConfig.admin}/users/:userId Routes`, () => {
-    it(`should return http status of 401 `)
+    it(`should return http status of 405 with Allow header 'GET, DELETE, PUT' on POST`, done => {
+        supertest(server).post(`${uriConfig.api + uriConfig.admin}/users/userid`)
+            .expect(405)
+            .then(response => {
+                expect(response.headers.allow).toBe('GET, DELETE, PUT');
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
 });
