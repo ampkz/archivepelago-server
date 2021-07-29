@@ -77,7 +77,6 @@ exports.authenticate = function(req, res, next){
         .then(user =>{
             // eslint-disable-next-line no-undef
             res.status(204).cookie('jwt', signToken(user.id, user.auth, process.env.TOKEN_EXPIRATION), {httpOnly: true, maxAge: Number(process.env.COOKIE_EXPIRATION)}).end();
-            // res.status(200).json({token: signToken(user.id, user.auth, '1d')});
         })
         .catch(error => {
             if(error === 401)
@@ -122,7 +121,7 @@ exports.deleteUser = function(req, res, next){
     const { userId } = req.params;
 
     archiveNeo4jUsers.deleteUser(userId)
-        .then( () => {
+        .then(() => {
             res.status(204).end();
         })
         .catch(error => {

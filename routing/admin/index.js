@@ -285,9 +285,11 @@ router.post('/users/:userId', sendStatus405('GET, DELETE, PUT'));
  *             description: The authentication realm.
  *       403:
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
+ *       404:
+ *         description: User not found.
  * 
  */
-router.get('/users/:userId', permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUser);
+router.get('/users/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.getUser);
 
 /**
  * @swagger
@@ -304,6 +306,12 @@ router.get('/users/:userId', permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUser)
  *     tags:
  *       - Users
  *     responses:
+ *       200:
+ *         description: Updated user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  *       401:
  *         description: Invalid authentication token.
  *         headers:
@@ -344,7 +352,9 @@ router.get('/users/:userId', permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUser)
  *             description: The authentication realm.
  *       403:
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
- */
- router.delete('/users/:userId', permitRoles(Auth.ADMIN), archiveNeo4jUsers.deleteUser);
+ *       404:
+ *         description: User not found.
+ * */
+ router.delete('/users/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.deleteUser);
 
 module.exports = router;

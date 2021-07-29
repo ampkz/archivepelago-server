@@ -103,7 +103,7 @@ describe(`permit roles middleware test`, () => {
               jwt: token
             },
             params: {
-              id: 'contributor'
+              userId: 'contributor'
             }
           });
         const response = httpMocks.createResponse();

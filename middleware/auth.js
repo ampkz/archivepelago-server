@@ -10,7 +10,7 @@ function permitRoles(...rolesPermitted) {
                 
                 // eslint-disable-next-line no-undef
                 jwt.verify(token, process.env.TOKEN_SECRET, function(err, decoded){
-                    if(decoded && (rolesPermitted.includes(decoded.auth) || (rolesPermitted.includes(Auth.SAME_ID) && decoded.id === req.params.id))){
+                    if(decoded && (rolesPermitted.includes(decoded.auth) || (rolesPermitted.includes(Auth.SAME_ID) && decoded.id === req.params.userId))){
                         next();
                     }else{
                         return res.status(403).end();
