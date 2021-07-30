@@ -128,3 +128,37 @@ exports.deleteUser = function(req, res, next){
             return handleResourceError(error, next, req);
         })
 }
+
+exports.updateUser = function(req, res, next){
+    const { email, firstName, lastName, secondName, auth } = req.body;
+    const { userId } = req.params;
+
+    const required = new FieldError(RoutingError.INVALID_REQUEST, 3000);
+
+    if(!email) required.addFieldError('email', FieldError.REQUIRED);
+    if(!firstName) required.addFieldError('firstName', FieldError.REQUIRED);
+    if(!lastName) required.addFieldError('lastName', FieldError.REQUIRED);
+    if(!auth) required.addFieldError('auth', FieldError.REQUIRED);
+
+    if(required.hasErrors()){
+        return next(required);
+    }
+
+    const valid = new FieldError(RoutingError.INVALID_REQUEST, 3001);
+
+    if ( !Auth.isARole(auth) ) valid.addFieldError('auth', FieldError.INVALID_TYPE);
+
+    if(valid.hasErrors()){
+        return next(valid);
+    }
+    
+    const nameObj = { firstName, lastName, secondName };
+
+    archiveNeo4jUsers.updateUser(userId, email, nameObj, auth)
+        .then((updatedUser)=>{
+            res.status(200).json(prepReturnUser(updatedUser.record));
+        })
+        .catch(error => {
+            return handleResourceError(error, next, req);
+        })
+}

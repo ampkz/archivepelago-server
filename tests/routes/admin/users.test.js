@@ -429,7 +429,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId DELETE Routes`, () =>
         }
         
         const agent = supertest.agent(server);
-        await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
+        await agent.post(`${uriConfig.api}/authenticate`).send({email, password: 'admin'});
         agent.delete(`${uriConfig.api + uriConfig.admin}/users/${user.properties.id}`)
             .expect(204)
             .then(() => {
@@ -454,7 +454,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId DELETE Routes`, () =>
     })
 });
 
-describe(`${uriConfig.api + uriConfig.admin}/users/:userId PUT Routes`, () => {
+describe.only(`${uriConfig.api + uriConfig.admin}/users/:userId PUT Routes`, () => {
     it(`should return http status of 401 with Authorization realm header on PUT without authorization cookie`, done => {
         supertest(server).put(`${uriConfig.api + uriConfig.admin}/users/userId`)
             .expect(401)
@@ -483,109 +483,169 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId PUT Routes`, () => {
             })
     })
 
-        // it(`should return http status of 404 on PUT with unknown userid and authorization cookie`, async done => {
-    //     const agent = supertest.agent(server);
-    //     await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-    //     agent.put(`${uriConfig.api + uriConfig.admin}/users/userid`)
-    //         .expect(404)
-    //         .then(() => {
-    //             done();
-    //         })
-    //         .catch(error => {
-    //             done(error);
-    //         })
-    // })
+    it(`should return http status of 404 on PUT with unknown userid and authorization cookie`, async done => {
+        const email = faker.internet.email();
+        const firstName = faker.name.firstName();
+        const lastName = faker.name.lastName();
+        const secondName = faker.name.middleName();
+        const auth = Auth.CONTRIBUTOR;
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+        agent.put(`${uriConfig.api + uriConfig.admin}/users/userid`)
+            .send({email, firstName, lastName, secondName, auth})
+            .expect(404)
+            .then(() => {
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
 
-    // it(`should return http status of 200 with updated user on PUT with authorization cookie and updated user`, async done => {
-    //     let user;
-    //     try{
-    //         user = await archiveNeo4jUsers.createUser(faker.internet.email(), {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.ADMIN, faker.internet.password())
-    //     }catch(e){
-    //         console.log(e);
-    //     }
-    //     const email = faker.internet.email();
-    //     const firstName = faker.name.firstName();
-    //     const lastName = faker.name.lastName();
-    //     const secondName = faker.name.middleName();
-    //     const auth = Auth.CONTRIBUTOR;
-    //     const password = faker.internet.password();
+    it(`should return http status of 200 with updated user on PUT with authorization cookie and updated user`, async done => {
+        let user;
+        try{
+            user = await archiveNeo4jUsers.createUser(faker.internet.email(), {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.ADMIN, faker.internet.password())
+        }catch(e){
+            console.log(e);
+        }
+        const email = faker.internet.email();
+        const firstName = faker.name.firstName();
+        const lastName = faker.name.lastName();
+        const secondName = faker.name.middleName();
+        const auth = Auth.CONTRIBUTOR;
 
-    //     const agent = supertest.agent(server);
-    //     await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-    //     agent.put(`${uriConfig.api + uriConfig.admin}/users/${user.properties.id}`)
-    //         .send({email, firstName, lastName, secondName, auth, password})
-    //         .expect(200)
-    //         .then(response => {
-    //             expect(response.body.auth).toBe(auth);
-    //             expect(response.body.email).toBe(email);
-    //             expect(response.body.firstName).toBe(firstName);
-    //             expect(response.body.lastName).toBe(lastName);
-    //             expect(response.body.secondName).toBe(secondName);
-    //             done();
-    //         })
-    //         .catch(error => {
-    //             done(error);
-    //         })
-    // })
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+        agent.put(`${uriConfig.api + uriConfig.admin}/users/${user.properties.id}`)
+            .send({email, firstName, lastName, secondName, auth})
+            .expect(200)
+            .then(response => {
+                expect(response.body.auth).toBe(auth);
+                expect(response.body.email).toBe(email);
+                expect(response.body.firstName).toBe(firstName);
+                expect(response.body.lastName).toBe(lastName);
+                expect(response.body.secondName).toBe(secondName);
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
 
-    // it(`should return http status of 200 with updated user on PUT with authorization cookie and Contributor updating self`, async done => {
-    //     let user;
-    //     try{
-    //         user = await archiveNeo4jUsers.createUser(faker.internet.email(), {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, faker.internet.password())
-    //     }catch(e){
-    //         console.log(e);
-    //     }
-    //     const email = faker.internet.email();
-    //     const firstName = faker.name.firstName();
-    //     const lastName = faker.name.lastName();
-    //     const secondName = faker.name.middleName();
-    //     const auth = Auth.CONTRIBUTOR;
-    //     const password = faker.internet.password();
+    it(`should return http status of 200 with updated user on PUT with authorization cookie and Contributor updating self`, async done => {
+        let user;
+        const origEmail = faker.internet.email();
+        const origPassword = faker.internet.password();
+        try{
+            user = await archiveNeo4jUsers.createUser(origEmail, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, origPassword);
+        }catch(e){
+            console.log(e);
+        }
+        const email = faker.internet.email();
+        const firstName = faker.name.firstName();
+        const lastName = faker.name.lastName();
+        const secondName = faker.name.middleName();
+        const auth = Auth.CONTRIBUTOR;
 
-    //     const agent = supertest.agent(server);
-    //     await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-    //     agent.put(`${uriConfig.api + uriConfig.admin}/users/${user.properties.id}`)
-    //         .send({email, firstName, lastName, secondName, auth, password})
-    //         .expect(200)
-    //         .then(response => {
-    //             expect(response.body.auth).toBe(auth);
-    //             expect(response.body.email).toBe(email);
-    //             expect(response.body.firstName).toBe(firstName);
-    //             expect(response.body.lastName).toBe(lastName);
-    //             expect(response.body.secondName).toBe(secondName);
-    //             done();
-    //         })
-    //         .catch(error => {
-    //             done(error);
-    //         })
-    // })
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email: origEmail, password: origPassword});
+        agent.put(`${uriConfig.api + uriConfig.admin}/users/${user.properties.id}`)
+            .send({email, firstName, lastName, secondName, auth})
+            .expect(200)
+            .then(response => {
+                expect(response.body.auth).toBe(auth);
+                expect(response.body.email).toBe(email);
+                expect(response.body.firstName).toBe(firstName);
+                expect(response.body.lastName).toBe(lastName);
+                expect(response.body.secondName).toBe(secondName);
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
 
-    // it(`should return http status of 403 on PUT with authorization cookie and Contributor updating self to Admin`, async done => {
-    //     let user;
-    //     try{
-    //         user = await archiveNeo4jUsers.createUser(faker.internet.email(), {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, faker.internet.password())
-    //     }catch(e){
-    //         console.log(e);
-    //     }
-    //     const email = faker.internet.email();
-    //     const firstName = faker.name.firstName();
-    //     const lastName = faker.name.lastName();
-    //     const secondName = faker.name.middleName();
-    //     const auth = Auth.ADMIN;
-    //     const password = faker.internet.password();
+    it(`should return http status of 403 on PUT with authorization cookie and Contributor updating self to Admin`, async done => {
+        let user;
+        const origEmail = faker.internet.email();
+        const origPassword = faker.internet.password();
+        try{
+            user = await archiveNeo4jUsers.createUser(origEmail, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, origPassword);
+        }catch(e){
+            console.log(e);
+        }
+        const email = faker.internet.email();
+        const firstName = faker.name.firstName();
+        const lastName = faker.name.lastName();
+        const secondName = faker.name.middleName();
+        const auth = Auth.ADMIN;
 
-    //     const agent = supertest.agent(server);
-    //     await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-    //     agent.put(`${uriConfig.api + uriConfig.admin}/users/${user.properties.id}`)
-    //         .send({email, firstName, lastName, secondName, auth, password})
-    //         .expect(403)
-    //         .then(() => {
-    //             done();
-    //         })
-    //         .catch(error => {
-    //             done(error);
-    //         })
-    // })
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email: origEmail, password: origPassword});
+        agent.put(`${uriConfig.api + uriConfig.admin}/users/${user.properties.id}`)
+            .send({email, firstName, lastName, secondName, auth})
+            .expect(403)
+            .then(() => {
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 400 with required fields on PUT with authorization cookie and without required fields`, async done => {
+        let user;
+        try{
+            user = await archiveNeo4jUsers.createUser(faker.internet.email(), {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, faker.internet.password());
+        }catch(e){
+            console.log(e);
+        }
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+        agent.put(`${uriConfig.api + uriConfig.admin}/users/${user.properties.id}`)
+            .expect(400)
+            .then(response => {
+                expect(response.body.message).toBe(RoutingError.INVALID_REQUEST);
+                expect(response.body.errors).toContainEqual({field: 'email', message: FieldError.REQUIRED});
+                expect(response.body.errors).toContainEqual({field: 'firstName', message: FieldError.REQUIRED});    
+                expect(response.body.errors).toContainEqual({field: 'lastName', message: FieldError.REQUIRED});
+                expect(response.body.errors).toContainEqual({field: 'auth', message: FieldError.REQUIRED});
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
+
+    it(`should return http status of 400 with invalid type on PUT with authorization cookie and invalid role`, async done => {
+        let user;
+        const origEmail = faker.internet.email();
+        const origPassword = faker.internet.password();
+        try{
+            user = await archiveNeo4jUsers.createUser(origEmail, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, origPassword);
+        }catch(e){
+            console.log(e);
+        }
+        const email = faker.internet.email();
+        const firstName = faker.name.firstName();
+        const lastName = faker.name.lastName();
+        const secondName = faker.name.middleName();
+        
+        const agent = supertest.agent(server);
+        await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+        agent.put(`${uriConfig.api + uriConfig.admin}/users/${user.properties.id}`)
+            .send({email, firstName, lastName, secondName, auth: 'invalid auth'})
+            .expect(400)
+            .then(response => {
+                expect(response.body.message).toBe(RoutingError.INVALID_REQUEST);
+                expect(response.body.errors).toContainEqual({field: 'auth', message: FieldError.INVALID_TYPE});
+                done();
+            })
+            .catch(error => {
+                done(error);
+            })
+    })
 });
 
 describe(`${uriConfig.api + uriConfig.admin}/users/:userId Routes`, () => {
@@ -600,6 +660,4 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId Routes`, () => {
                 done(error);
             })
     })
-
-
 });

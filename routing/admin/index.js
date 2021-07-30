@@ -268,6 +268,8 @@ router.post('/users/:userId', sendStatus405('GET, DELETE, PUT'));
  *         description: UUID of the user.
  *     tags:
  *       - Users
+ *     security:
+ *       - cookieAuth: []
  *     responses:
  *       200:
  *         description: Retrieved user.
@@ -305,6 +307,46 @@ router.get('/users/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4j
  *         description: UUID of the user.
  *     tags:
  *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 required: true
+ *                 type: string
+ *                 example: user@email.com
+ *                 description: User's new or current email address.
+ *               firstName:
+ *                 required: true
+ *                 type: string
+ *                 example: Jane
+ *                 description: User's new or current first name.
+ *               lastName:
+ *                 required: true
+ *                 type: string
+ *                 example: Doe
+ *                 description: User's new or current last name.
+ *               secondName:
+ *                 required: false
+ *                 type: string
+ *                 example: Lilly
+ *                 description: User's new or current second/middle name.
+ *               auth:
+ *                 required: true
+ *                 type: string
+ *                 enum: [admin, contributor]
+ *                 example: admin
+ *                 description: User's new or current authentication role.
+ *               password:
+ *                 required: false
+ *                 type: string
+ *                 example: p4ssw0rd
+ *                 description: User's new password.
+ *     security:
+ *       - cookieAuth: []
  *     responses:
  *       200:
  *         description: Updated user.
@@ -312,6 +354,12 @@ router.get('/users/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4j
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Missing/malformed fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/FieldErrorMessage'
  *       401:
  *         description: Invalid authentication token.
  *         headers:
@@ -322,8 +370,10 @@ router.get('/users/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4j
  *             description: The authentication realm.
  *       403:
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
+ *       404:
+ *         description: User not found.
  */
- router.put('/users/:userId', permitRoles(Auth.ADMIN), ()=>{});
+ router.put('/users/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.updateUser);
 
 /**
  * @swagger
@@ -339,6 +389,8 @@ router.get('/users/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4j
  *         description: UUID of the user.
  *     tags:
  *       - Users
+ *     security:
+ *       - cookieAuth: []
  *     responses:
  *       204:
  *         description: User was deleted successfully.
