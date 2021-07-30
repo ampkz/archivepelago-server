@@ -514,11 +514,12 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId PUT Routes`, () => {
         const lastName = faker.name.lastName();
         const secondName = faker.name.middleName();
         const auth = Auth.CONTRIBUTOR;
+        const password = faker.internet.password();
 
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
         agent.put(`${uriConfig.api + uriConfig.admin}/users/${user.properties.id}`)
-            .send({email, firstName, lastName, secondName, auth})
+            .send({email, firstName, lastName, secondName, auth, password})
             .expect(200)
             .then(response => {
                 expect(response.body.auth).toBe(auth);
@@ -526,6 +527,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId PUT Routes`, () => {
                 expect(response.body.firstName).toBe(firstName);
                 expect(response.body.lastName).toBe(lastName);
                 expect(response.body.secondName).toBe(secondName);
+                expect(response.body.password).toBe("updated");
                 done();
             })
             .catch(error => {

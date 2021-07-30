@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { UserError, DBError, InternalError } = require('../_helpers/errors');
+const { UserError, DBError, InternalError, ArchiveError } = require('../_helpers/errors');
 const { connect, close, prepRecord, findResource, getResource, deleteResource, updateResource } = require('./utils');
 const { getSessionOptions } = require('../_helpers/db');
 
@@ -135,4 +135,43 @@ exports.deleteUser = function(id){
 exports.updateUser = function(id, email, nameObj, auth){
     // eslint-disable-next-line no-undef
     return updateResource('MATCH (u:USER {id: $id}) RETURN u', {id}, null, 'MATCH (u:USER {id: $id}) SET u.email = $email, u.firstName = $firstName, u.secondName = $secondName, u.lastName = $lastName, u.auth = $auth RETURN u', {id, email, auth, firstName: nameObj.firstName, secondName: nameObj.secondName || '', lastName: nameObj.lastName}, [0], process.env.USERS_DB)
+}
+
+exports.updatePassword = function(id, password, saltRounds = 10){
+    const promise = new Promise((resolve, reject) => {
+        (async () => {
+            let driver, sess;
+
+            try{
+                driver = connect();
+                // eslint-disable-next-line no-undef
+                sess = driver.session(getSessionOptions(process.env.USERS_DB));
+            }catch(e){
+                reject(new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e));
+                return;
+            }
+            
+            try{
+                const pwdHash = await bcrypt.hash(password, saltRounds);
+                const match = await sess.run(`MATCH(u:USER { id: $id }) SET u.pwd = $pwdHash RETURN u`, { id, pwdHash });
+                
+                if(match.records.length >=1)
+                {
+                    resolve("updated");
+                    return;
+                }else{
+                    reject(new ArchiveError(ArchiveError.COULD_NOT_FIND_RESOURCE, 2003));
+                    return;
+                }
+            }catch(e){
+                reject(new InternalError(UserError.USER_SEARCH_ERROR, 1002, e));
+                return;
+            }finally{
+                await close(driver, sess);
+            }
+        })();
+        
+    });
+
+    return promise;
 }

@@ -130,7 +130,7 @@ exports.deleteUser = function(req, res, next){
 }
 
 exports.updateUser = function(req, res, next){
-    const { email, firstName, lastName, secondName, auth } = req.body;
+    const { email, firstName, lastName, secondName, auth, password } = req.body;
     const { userId } = req.params;
 
     const required = new FieldError(RoutingError.INVALID_REQUEST, 3000);
@@ -162,7 +162,20 @@ exports.updateUser = function(req, res, next){
 
     archiveNeo4jUsers.updateUser(userId, email, nameObj, auth)
         .then((updatedUser)=>{
-            res.status(200).json(prepReturnUser(updatedUser.record));
+            if(password){
+                archiveNeo4jUsers.updatePassword(userId, password)
+                    .then(response => {
+                        const preppedUser = prepReturnUser(updatedUser.record);
+                        preppedUser.password = response;
+                        res.status(200).json(preppedUser);
+                        return;
+                    })
+                    .catch(error => {
+                        return handleResourceError(error, next, req);
+                    })
+            }else{
+                res.status(200).json(prepReturnUser(updatedUser.record));
+            }
         })
         .catch(error => {
             return handleResourceError(error, next, req);
