@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 function errorHandler(error, req, res, next){
     const err = { code: error.code };
     err.message = error.message || "Something's not right.";
