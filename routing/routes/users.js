@@ -1,4 +1,4 @@
-const { Auth, signToken } = require('../../_helpers/auth');
+const { Auth, signToken, checkRoleEscalation } = require('../../_helpers/auth');
 const { UserError, RoutingError, FieldError, ArchiveError } = require('../../_helpers/errors');
 const archiveNeo4jUsers = require('../../archive-neo4j/users');
 const { sendError401, createError } = require("../../middleware/errors");
@@ -152,6 +152,12 @@ exports.updateUser = function(req, res, next){
         return next(valid);
     }
     
+    const canEscalate = checkRoleEscalation(req.cookies.jwt, auth);
+
+    if(canEscalate.hasErrors()){
+        return next(canEscalate);
+    }
+
     const nameObj = { firstName, lastName, secondName };
 
     archiveNeo4jUsers.updateUser(userId, email, nameObj, auth)

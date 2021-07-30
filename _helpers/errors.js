@@ -1,9 +1,13 @@
 class DataError extends Error {
-  constructor(message, code, data = null) {
+  constructor(message, code, data = []) {
     super(message);
     this.name = 'UserError';
     this.data = data;
     this.code = code;
+  }
+
+  hasErrors(){
+    return this.data.length > 0;
   }
 }
 
@@ -74,10 +78,20 @@ class FieldError extends DataError {
     this.data.push({field, message});
   }
 
-  hasErrors(){
-    return this.data.length > 0;
+}
+
+class EscalationError extends DataError {
+  static CANNOT_ESCALATE = "Cannot Escalate";
+  static MUST_BE_ADMIN = "Must Be Admin To Escalate Role";
+  
+  constructor(){
+    super(EscalationError.CANNOT_ESCALATE, 4000, []);
+    this.status = 403;
   }
 
+  addError(message){
+    this.data.push(message);
+  }
 }
 
 module.exports = {
@@ -86,5 +100,6 @@ module.exports = {
   RoutingError,
   DBError,
   InternalError,
-  FieldError
+  FieldError,
+  EscalationError
 }

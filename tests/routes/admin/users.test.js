@@ -10,7 +10,7 @@ const server = require('../../../server/server');
 const { serverInit, destroyTestingDBs } = require('../../../server/utils');
 const supertest = require("supertest");
 const uriConfig = require('../../../routing/uriConfig');
-const { RoutingError, FieldError } = require("../../../_helpers/errors");
+const { RoutingError, FieldError, EscalationError } = require("../../../_helpers/errors");
 const { Auth } = require("../../../_helpers/auth");
 const faker = require('faker');
 const archiveNeo4jUsers = require('../../../archive-neo4j/users');
@@ -429,7 +429,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId DELETE Routes`, () =>
         }
         
         const agent = supertest.agent(server);
-        await agent.post(`${uriConfig.api}/authenticate`).send({email, password: 'admin'});
+        await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
         agent.delete(`${uriConfig.api + uriConfig.admin}/users/${user.properties.id}`)
             .expect(204)
             .then(() => {
@@ -454,7 +454,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId DELETE Routes`, () =>
     })
 });
 
-describe.only(`${uriConfig.api + uriConfig.admin}/users/:userId PUT Routes`, () => {
+describe(`${uriConfig.api + uriConfig.admin}/users/:userId PUT Routes`, () => {
     it(`should return http status of 401 with Authorization realm header on PUT without authorization cookie`, done => {
         supertest(server).put(`${uriConfig.api + uriConfig.admin}/users/userId`)
             .expect(401)
@@ -586,7 +586,8 @@ describe.only(`${uriConfig.api + uriConfig.admin}/users/:userId PUT Routes`, () 
         agent.put(`${uriConfig.api + uriConfig.admin}/users/${user.properties.id}`)
             .send({email, firstName, lastName, secondName, auth})
             .expect(403)
-            .then(() => {
+            .then((response) => {
+                expect(response.body.message).toBe(EscalationError.CANNOT_ESCALATE);
                 done();
             })
             .catch(error => {

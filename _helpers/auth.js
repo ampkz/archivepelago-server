@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { EscalationError } = require("./errors");
 
 class Auth {
     static ADMIN = "admin";
@@ -15,7 +16,25 @@ const signToken = function(id, auth, expiresIn){
     return jwt.sign({id, auth}, process.env.TOKEN_SECRET, {expiresIn});
 }
 
+const checkRoleEscalation = function (token, requestedRole){
+    const escalationError = new EscalationError();
+    
+    try{
+        // eslint-disable-next-line no-undef
+        jwt.verify(token, process.env.TOKEN_SECRET, function(err, decoded){
+            if(decoded) {
+                if(requestedRole !== decoded.auth && decoded.auth !== Auth.ADMIN) escalationError.addError(EscalationError.MUST_BE_ADMIN);
+            }
+        });
+    }catch(e){
+        escalationError.addError(e);
+    }
+
+    return escalationError;
+}
+
 module.exports = {
     Auth,
-    signToken
+    signToken,
+    checkRoleEscalation
 }
