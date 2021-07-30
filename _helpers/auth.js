@@ -13,6 +13,7 @@ class Auth {
 }
 
 const signToken = function(id, auth, expiresIn){
+    // eslint-disable-next-line no-undef
     return jwt.sign({id, auth}, process.env.TOKEN_SECRET, {expiresIn});
 }
 

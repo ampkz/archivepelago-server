@@ -72,7 +72,7 @@ class FieldError extends DataError {
   constructor(message, code){
     super(message, code, []);
     this.status = 400;
-  };
+  }
   
   addFieldError(field, message){
     this.data.push({field, message});
@@ -83,7 +83,7 @@ class FieldError extends DataError {
 class EscalationError extends DataError {
   static CANNOT_ESCALATE = "Cannot Escalate";
   static MUST_BE_ADMIN = "Must Be Admin To Escalate Role";
-  
+
   constructor(){
     super(EscalationError.CANNOT_ESCALATE, 4000, []);
     this.status = 403;

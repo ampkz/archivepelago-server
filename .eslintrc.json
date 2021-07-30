@@ -4,8 +4,10 @@
         "commonjs": true,
         "es2021": true
     },
+    "parser": "@babel/eslint-parser",
     "extends": "eslint:recommended",
     "parserOptions": {
+        "requireConfigFile": false,
         "ecmaVersion": 12
     },
     "rules": {
