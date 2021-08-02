@@ -76,7 +76,7 @@ exports.authenticate = function(req, res, next){
     archiveNeo4jUsers.checkPassword(email, password)
         .then(user =>{
             // eslint-disable-next-line no-undef
-            res.status(204).cookie('jwt', signToken(user.id, user.auth, process.env.TOKEN_EXPIRATION), {httpOnly: true, maxAge: Number(process.env.COOKIE_EXPIRATION)}).end();
+            res.status(204).cookie('jwt', signToken(user.id, user.auth, process.env.TOKEN_EXPIRATION), {httpOnly: true, maxAge: Number(process.env.COOKIE_EXPIRATION), sameSite: true}).end();
         })
         .catch(error => {
             if(error === 401)

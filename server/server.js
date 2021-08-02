@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
 const app = express();
+const cors = require('cors');
 const uriConfig = require('../routing/uriConfig');
 const cookieParser = require('cookie-parser');
 
@@ -12,6 +13,7 @@ const { errorHandler } = require("../middleware/errors");
 const admin = require('../routing/admin');
 const authenticate = require('../routing/authenticate');
 
+app.use(cors({origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true}));
 app.use(cookieParser());
 app.use(helmet());
 app.use(express.json());
