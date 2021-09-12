@@ -99,19 +99,16 @@ async function addRelationship(nodeAMatchingQuery, nodeAParams, nodeBMatchingQue
 }
 
 // eslint-disable-next-line no-undef
-function addChildToParentResource(parentResourceMatchingQuery, parentResourceParams, newAttachmentQuery, childAttachQuery, childParams, recordIds=[0], db = process.env.ARCHIVE_DB){
-  const promise = new Promise( (resolve, reject) => {
-    (async ()=>{
-      let driver,
-        sess;
+async function addChildToParentResource(parentResourceMatchingQuery, parentResourceParams, newAttachmentQuery, childAttachQuery, childParams, recordIds=[0], db = process.env.ARCHIVE_DB){
+    let driver,
+    sess;
 
     try{
       driver = connect();
       // eslint-disable-next-line no-undef
       sess = driver.session(getSessionOptions(db));
     }catch(e){
-      reject(new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e));
-      return;
+      throw new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e);
     }
       
     let resource = [];
@@ -120,14 +117,12 @@ function addChildToParentResource(parentResourceMatchingQuery, parentResourcePar
       resource = await findResource(parentResourceMatchingQuery, parentResourceParams, sess);
     }catch(e){
       await close(driver, sess);
-      reject(new InternalError(ArchiveError.RESOURCE_SEARCH_ERROR, 1002, e));
-      return;
+      throw new InternalError(ArchiveError.RESOURCE_SEARCH_ERROR, 1002, e);
     }
 
     if(resource.length === 0){
       await close(driver, sess);
-      reject(new ArchiveError(ArchiveError.COULD_NOT_FIND_RESOURCE, 2009));
-      return;
+      throw new ArchiveError(ArchiveError.COULD_NOT_FIND_RESOURCE, 2009);
     }else{
       resource = [];
 
@@ -137,8 +132,7 @@ function addChildToParentResource(parentResourceMatchingQuery, parentResourcePar
         if(resource.length >= 1)
         {
           await close(driver,sess);
-          reject(new ArchiveError(ArchiveError.RESOURCE_ALREADY_EXISTS, 2011))
-          return;
+          throw new ArchiveError(ArchiveError.RESOURCE_ALREADY_EXISTS, 2011);
         }else{
           const txc = sess.beginTransaction();
           let match;
@@ -147,30 +141,28 @@ function addChildToParentResource(parentResourceMatchingQuery, parentResourcePar
           }catch(e){
             await txc.rollback();
             await close(driver, sess);
-            reject(new InternalError(ArchiveError.COULD_NOT_ATTACH_CHILD_TO_PARENT_RESOURCE, 1007, e));
-            return;
+            throw new InternalError(ArchiveError.COULD_NOT_ATTACH_CHILD_TO_PARENT_RESOURCE, 1007, e);
           }
 
           if(match.records.length >= 1){
             await txc.commit();
-            resolve({records: match.records.map(record => { return prepRecord(record, recordIds)}), summary: match.summary.counters._stats});
+            return {records: match.records.map(record => { return prepRecord(record, recordIds)}), summary: match.summary.counters._stats};
           }else{
             await txc.rollback();
             await close(driver, sess);
-            reject(new InternalError(ArchiveError.COULD_NOT_ATTACH_CHILD_TO_PARENT_RESOURCE, 1009, match.records))
+            throw new InternalError(ArchiveError.COULD_NOT_ATTACH_CHILD_TO_PARENT_RESOURCE, 1009, match.records);
           }
         }
 
       }catch(e){
         await close(driver, sess);
-        reject(new InternalError(ArchiveError.COULD_NOT_FIND_RESOURCE, 1002, e));
-        return;
+        if(e instanceof DataError || e instanceof InternalError){
+          throw e;
+        }else{
+          throw new InternalError(ArchiveError.COULD_NOT_FIND_RESOURCE, 1002, e);
+        }
       }
     }
-    })()
-  });
-
-  return promise;
 }
 
 // eslint-disable-next-line no-undef
