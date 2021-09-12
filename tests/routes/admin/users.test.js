@@ -270,18 +270,6 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
     })
     
 })
-it(`should return http status of 404 on GET with unknown userid and authorization cookie`, async done => {
-    const agent = supertest.agent(server);
-    await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-    agent.get(`${uriConfig.api + uriConfig.admin}/users/userid`)
-        .expect(404)
-        .then(() => {
-            done();
-        })
-        .catch(error => {
-            done(error);
-        })
-})
 
 describe(`${uriConfig.api + uriConfig.admin}/users/:userId GET Routes`, () => {
     it(`should return http status of 401 with Authorization realm header on GET without authorization cookie`, done => {
