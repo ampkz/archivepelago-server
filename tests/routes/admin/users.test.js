@@ -65,7 +65,7 @@ describe(`${uriConfig.api}/authenticate Routes`, () => {
             .send({email: faker.internet.email(), password: faker.internet.password()})
             .expect(401)
             .then(response => {
-                expect(response.headers['www-authenticate']).toBe(`Basic realm="${process.env.AUTH_REALM}"`)
+                expect(response.headers['www-authenticate']).toBe(`xBasic realm="${process.env.AUTH_REALM}"`)
                 done();
             })
             .catch(error => {
@@ -195,7 +195,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
         supertest(server).post(`${uriConfig.api + uriConfig.admin}/users`)
             .expect(401)
             .then(response => {
-                expect(response.headers['www-authenticate']).toBe(`Basic realm="${process.env.AUTH_REALM}"`);
+                expect(response.headers['www-authenticate']).toBe(`xBasic realm="${process.env.AUTH_REALM}"`);
                 done();
             })
             .catch(error => {
@@ -223,7 +223,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users Routes`, () => {
         supertest(server).get(`${uriConfig.api + uriConfig.admin}/users`)
             .expect(401)
             .then(response => {
-                expect(response.headers['www-authenticate']).toBe(`Basic realm="${process.env.AUTH_REALM}"`);
+                expect(response.headers['www-authenticate']).toBe(`xBasic realm="${process.env.AUTH_REALM}"`);
                 done();
             })
             .catch(error => {
@@ -288,7 +288,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId GET Routes`, () => {
         supertest(server).get(`${uriConfig.api + uriConfig.admin}/users/userId`)
             .expect(401)
             .then(response => {
-                expect(response.headers['www-authenticate']).toBe(`Basic realm="${process.env.AUTH_REALM}"`);
+                expect(response.headers['www-authenticate']).toBe(`xBasic realm="${process.env.AUTH_REALM}"`);
                 done();
             })
             .catch(error => {
@@ -373,7 +373,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId DELETE Routes`, () =>
         supertest(server).delete(`${uriConfig.api + uriConfig.admin}/users/userId`)
             .expect(401)
             .then(response => {
-                expect(response.headers['www-authenticate']).toBe(`Basic realm="${process.env.AUTH_REALM}"`);
+                expect(response.headers['www-authenticate']).toBe(`xBasic realm="${process.env.AUTH_REALM}"`);
                 done();
             })
             .catch(error => {
@@ -459,7 +459,7 @@ describe(`${uriConfig.api + uriConfig.admin}/users/:userId PUT Routes`, () => {
         supertest(server).put(`${uriConfig.api + uriConfig.admin}/users/userId`)
             .expect(401)
             .then(response => {
-                expect(response.headers['www-authenticate']).toBe(`Basic realm="${process.env.AUTH_REALM}"`);
+                expect(response.headers['www-authenticate']).toBe(`xBasic realm="${process.env.AUTH_REALM}"`);
                 done();
             })
             .catch(error => {
