@@ -19,9 +19,7 @@ async function close(driver, session){
 }
 
 // eslint-disable-next-line no-undef
-function addRelationship(nodeAMatchingQuery, nodeAParams, nodeBMatchingQuery, nodeBParams, relMatchingQuery, relParams, creationQuery, recordIds=[0], db = process.env.ARCHIVE_DB){
-  const promise = new Promise( (resolve, reject) => {
-    (async () => {
+async function addRelationship(nodeAMatchingQuery, nodeAParams, nodeBMatchingQuery, nodeBParams, relMatchingQuery, relParams, creationQuery, recordIds=[0], db = process.env.ARCHIVE_DB){
       let driver,
         sess;
       
@@ -30,8 +28,7 @@ function addRelationship(nodeAMatchingQuery, nodeAParams, nodeBMatchingQuery, no
         // eslint-disable-next-line no-undef
         sess = driver.session(getSessionOptions(db));
       }catch(e){
-        reject(new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e));
-        return;
+        throw new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e);
       }
 
       let resource = [];
@@ -40,14 +37,12 @@ function addRelationship(nodeAMatchingQuery, nodeAParams, nodeBMatchingQuery, no
         resource = await findResource(nodeAMatchingQuery, nodeAParams);
       }catch(e){
         await close(driver, sess);
-        reject(new InternalError(ArchiveError.RESOURCE_SEARCH_ERROR, 1002, e));
-        return;
+        throw new InternalError(ArchiveError.RESOURCE_SEARCH_ERROR, 1002, e);
       }
 
       if(resource.length === 0){
         await close(driver, sess);
-        reject(new ArchiveError(ArchiveError.COULD_NOT_FIND_RESOURCE, 2011));
-        return;
+        throw new ArchiveError(ArchiveError.COULD_NOT_FIND_RESOURCE, 2011);
       }else{
         resource = [];
 
@@ -55,14 +50,12 @@ function addRelationship(nodeAMatchingQuery, nodeAParams, nodeBMatchingQuery, no
           resource = await findResource(nodeBMatchingQuery, nodeBParams);
         }catch(e){
           await close(driver, sess);
-          reject(new InternalError(ArchiveError.RESOURCE_SEARCH_ERROR, 1002, e));
-          return;
+          throw new InternalError(ArchiveError.RESOURCE_SEARCH_ERROR, 1002, e);
         }
 
         if(resource.length === 0){
           await close(driver, sess);
-          reject(new ArchiveError(ArchiveError.COULD_NOT_FIND_RESOURCE, 2012));
-          return;
+          throw new ArchiveError(ArchiveError.COULD_NOT_FIND_RESOURCE, 2012);
         }else{
           resource = [];
 
@@ -70,14 +63,12 @@ function addRelationship(nodeAMatchingQuery, nodeAParams, nodeBMatchingQuery, no
             resource = await findResource(relMatchingQuery, relParams);
           }catch(e){
             await close(driver, sess);
-            reject(new InternalError(ArchiveError.RESOURCE_SEARCH_ERROR, 1002, e));
-            return;
+            throw new InternalError(ArchiveError.RESOURCE_SEARCH_ERROR, 1002, e);
           }
 
           if(resource.length > 0){
             await close(driver, sess);
-            reject(new ArchiveError(ArchiveError.RESOURCE_ALREADY_EXISTS, 2013));
-            return;
+            throw new ArchiveError(ArchiveError.RESOURCE_ALREADY_EXISTS, 2013);
           }else{
             const txc = sess.beginTransaction();
             try{
@@ -85,17 +76,18 @@ function addRelationship(nodeAMatchingQuery, nodeAParams, nodeBMatchingQuery, no
             
               if(match.records.length === 1){
                 await txc.commit();
-                resolve(prepRecord(match.records[0], recordIds));
-                return;
+                return prepRecord(match.records[0], recordIds);
               }else{
                 await txc.rollback();
-                reject(new InternalError(ArchiveError.COULD_NOT_CREATE_RELATIONSHIP, 1017, `record length: ${match.records.length}`));
-                return;
+                throw new InternalError(ArchiveError.COULD_NOT_CREATE_RELATIONSHIP, 1017, `record length: ${match.records.length}`);
               }
             
             }catch(e){
-              reject(new InternalError(ArchiveError.COULD_NOT_CREATE_RELATIONSHIP, 1016, e));
-              return;
+              if(e instanceof DataError || e instanceof InternalError){
+                  throw e;
+              }else{
+                  throw new InternalError(ArchiveError.COULD_NOT_CREATE_RELATIONSHIP, 1016, e);
+              }
             }finally{
               await close(driver, sess);
             }
@@ -104,11 +96,6 @@ function addRelationship(nodeAMatchingQuery, nodeAParams, nodeBMatchingQuery, no
         }
 
       }
-      
-    })();
-  });
-
-  return promise;
 }
 
 // eslint-disable-next-line no-undef
