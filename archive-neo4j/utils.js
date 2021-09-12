@@ -444,66 +444,59 @@ const deepEqual = function (x, y) {
 }
 
 // eslint-disable-next-line no-undef
-function updateResource(matchingQuery, queryParams, newMatchingQueryParams, updateQuery, updateParams, changedRecordIds=[0], db = process.env.ARCHIVE_DB){
-  const promise = new Promise( (resolve, reject ) =>{
-    (async () => {
+async function updateResource(matchingQuery, queryParams, newMatchingQueryParams, updateQuery, updateParams, changedRecordIds=[0], db = process.env.ARCHIVE_DB){
     let driver, sess;
 
     try{
-      driver = connect();
-      // eslint-disable-next-line no-undef
-      sess = driver.session(getSessionOptions(db));
+        driver = connect();
+        // eslint-disable-next-line no-undef
+        sess = driver.session(getSessionOptions(db));
     }catch(e){
-      reject(new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e));
-      return;
+        throw new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e);
     }
 
     try{
-      const oldResource = await findResource(matchingQuery, queryParams, sess);
-      
-      if(oldResource.length === 0){
-        reject(new ArchiveError(ArchiveError.COULD_NOT_FIND_RESOURCE, 2003));
-        return;
-      }
-      let newResource = [];
-      
-      if(newMatchingQueryParams !== null) newResource = await findResource(matchingQuery, newMatchingQueryParams, sess);
-
-      if(newResource.length >= 1){
-        reject(new ArchiveError(ArchiveError.RESOURCE_ALREADY_EXISTS, 2004));
-        return;
-      }else{
-        const txc = sess.beginTransaction();
-        const match = await txc.run(updateQuery, updateParams);
-
-        if(match.records.length === 1){
-          let preppedRecord;
-          try{
-            preppedRecord = prepRecord(match.records[0], changedRecordIds);
-          }catch(e){
-            await txc.rollback();
-            reject(new InternalError(ArchiveError.COULD_NOT_PREP_RECORD, 1006, e));
-            return;
-          }
-          
-          await txc.commit();
-          resolve({record: preppedRecord, summary: match.summary.counters._stats});
-          return;
-        }else{
-          await txc.rollback();
-          reject(new InternalError(ArchiveError.COULD_NOT_UPDATE_RESOURCE, 1010, match.records));
+        const oldResource = await findResource(matchingQuery, queryParams, sess);
+        
+        if(oldResource.length === 0){
+            throw new ArchiveError(ArchiveError.COULD_NOT_FIND_RESOURCE, 2003);
         }
-      }
-    }catch(e){
-      reject(new InternalError(ArchiveError.COULD_NOT_UPDATE_RESOURCE, 1005, e));
-    }finally{
-      await close(driver, sess);
-    }
-    })();
-    
-  });
 
-  return promise;
+        let newResource = [];
+        
+        if(newMatchingQueryParams !== null) newResource = await findResource(matchingQuery, newMatchingQueryParams, sess);
+
+        if(newResource.length >= 1){
+            throw new ArchiveError(ArchiveError.RESOURCE_ALREADY_EXISTS, 2004);
+        }else{
+            const txc = sess.beginTransaction();
+            const match = await txc.run(updateQuery, updateParams);
+
+            if(match.records.length === 1){
+                let preppedRecord;
+                try{
+                preppedRecord = prepRecord(match.records[0], changedRecordIds);
+                }catch(e){
+                await txc.rollback();
+                throw new InternalError(ArchiveError.COULD_NOT_PREP_RECORD, 1006, e);
+                }
+                
+                await txc.commit();
+                return {record: preppedRecord, summary: match.summary.counters._stats};
+            }else{
+                await txc.rollback();
+                throw new InternalError(ArchiveError.COULD_NOT_UPDATE_RESOURCE, 1010, match.records);
+            }
+        }
+    }catch(e){
+        if(e instanceof DataError || e instanceof InternalError){
+            throw e;
+        }else{
+            throw new InternalError(ArchiveError.COULD_NOT_UPDATE_RESOURCE, 1005, e);
+        }
+    }finally{
+        await close(driver, sess);
+    }
 }
 
 module.exports = {
