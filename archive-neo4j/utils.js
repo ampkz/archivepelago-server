@@ -340,9 +340,7 @@ async function getResource(findingFunction, findingFunctionArgs, recordIds = [0]
 }
 
 // eslint-disable-next-line no-undef
-function getPath(pathQuery, pathParams, db = process.env.ARCHIVE_DB){
-  const promise = new Promise( (resolve, reject) =>{
-    (async () => {
+async function getPath(pathQuery, pathParams, db = process.env.ARCHIVE_DB){
     let driver, sess;
 
     try{
@@ -350,8 +348,7 @@ function getPath(pathQuery, pathParams, db = process.env.ARCHIVE_DB){
       // eslint-disable-next-line no-undef
       sess = driver.session(getSessionOptions(db));
     }catch(e){
-      reject(new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e));
-      return;
+      throw new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e);
     }
 
     try{
@@ -371,23 +368,20 @@ function getPath(pathQuery, pathParams, db = process.env.ARCHIVE_DB){
           });
         })
 
-        resolve(paths);
-        return;
+        return paths;
       }else{
-        reject(new ArchiveError(ArchiveError.COULD_NOT_FIND_RESOURCE, 2014));
-        return;
+        throw new ArchiveError(ArchiveError.COULD_NOT_FIND_RESOURCE, 2014);
       }
     }catch(e){
-      reject(new InternalError(ArchiveError.RESOURCE_SEARCH_ERROR, 1002, e));
-      return;
+      if(e instanceof DataError || e instanceof InternalError){
+        throw e;
+      }else{
+        throw new InternalError(ArchiveError.RESOURCE_SEARCH_ERROR, 1002, e);
+      }
     }finally{
       await close(driver, sess);
     }
-    })()
     
-  });
-
-  return promise;
 }
 
 const prepLink = function(start, end, relationship){
