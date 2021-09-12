@@ -255,10 +255,7 @@ async function deleteResource(findingFunction, findingFunctionArgs, deletionQuer
 }
 
 // eslint-disable-next-line no-undef
-function createResource(findingQuery, queryParams, creationQuery, recordIds=[0], db = process.env.ARCHIVE_DB){
-
-  const promise = new Promise( (resolve, reject ) =>{
-    (async () => {
+async function createResource(findingQuery, queryParams, creationQuery, recordIds=[0], db = process.env.ARCHIVE_DB){
       let driver, sess;
 
       try{
@@ -266,8 +263,7 @@ function createResource(findingQuery, queryParams, creationQuery, recordIds=[0],
         // eslint-disable-next-line no-undef
         sess = driver.session(getSessionOptions(db));
       }catch(e){
-        reject(new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e));
-        return;
+        throw new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e);
       }
   
       try{
@@ -276,8 +272,7 @@ function createResource(findingQuery, queryParams, creationQuery, recordIds=[0],
         if(findingQuery !== null) resource = await findResource(findingQuery, queryParams, sess);
   
         if(resource.length >= 1){
-          reject(new ArchiveError(ArchiveError.RESOURCE_ALREADY_EXISTS, 2001));
-          return;
+          throw new ArchiveError(ArchiveError.RESOURCE_ALREADY_EXISTS, 2001);
         }else{
           let txc = sess.beginTransaction();
   
@@ -289,30 +284,26 @@ function createResource(findingQuery, queryParams, creationQuery, recordIds=[0],
               preppedRecord = prepRecord(match.records[0], recordIds);
             }catch(e){
               await txc.rollback();
-              reject(new InternalError(ArchiveError.COULD_NOT_PREP_RECORD, 1006, e));
-              return;
+              throw new InternalError(ArchiveError.COULD_NOT_PREP_RECORD, 1006, e);
             }
   
             await txc.commit();
-            resolve({record: preppedRecord, summary: match.summary.counters._stats});
-            return;
+            return {record: preppedRecord, summary: match.summary.counters._stats};
           }else{
             await txc.rollback();
-            reject(new InternalError(ArchiveError.COULD_NOT_CREATE_RESOURCE, 1010, match.records));
-            return;
+            throw new InternalError(ArchiveError.COULD_NOT_CREATE_RESOURCE, 1010, match.records);
           }
         }
       }catch(e){
-        reject(new InternalError(ArchiveError.COULD_NOT_CREATE_RESOURCE, 1006, e))
-        return;
+        if(e instanceof DataError || e instanceof InternalError){
+            throw e;
+        }else{
+            throw new InternalError(ArchiveError.COULD_NOT_CREATE_RESOURCE, 1006, e);
+        }
       }finally{
         await close(driver, sess);
       }
-    })()
 
-  });
-
-  return promise;
 }
 
 // eslint-disable-next-line no-undef
