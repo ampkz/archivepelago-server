@@ -1,5 +1,5 @@
 const neo4j = require('neo4j-driver');
-const { ArchiveError, InternalError, DBError } = require('../_helpers/errors');
+const { ArchiveError, InternalError, DBError, DataError } = require('../_helpers/errors');
 const { getSessionOptions } = require('../_helpers/db');
 
 function connect(){
@@ -371,7 +371,11 @@ async function getResource(findingFunction, findingFunctionArgs, recordIds = [0]
         throw new ArchiveError(ArchiveError.COULD_NOT_FIND_RESOURCE, 2007);
       }
     }catch(e){
-      throw new InternalError(ArchiveError.RESOURCE_SEARCH_ERROR, 1002, e);
+      if(e instanceof DataError || e instanceof InternalError){
+          throw e;
+      }else{
+        throw new InternalError(ArchiveError.RESOURCE_SEARCH_ERROR, 1002, e);
+      }
     }finally{
       await close(driver, sess);
     }

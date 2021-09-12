@@ -101,5 +101,6 @@ module.exports = {
   DBError,
   InternalError,
   FieldError,
-  EscalationError
+  EscalationError,
+  DataError
 }
