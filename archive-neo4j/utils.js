@@ -222,69 +222,57 @@ function prepRecord(record, recordIds = [0]){
 }
 
 // eslint-disable-next-line no-undef
-function deleteResource(findingFunction, findingFunctionArgs, deletionQuery, queryParams, nodesToDelete = 1, relationshipsToDelete = null, db = process.env.ARCHIVE_DB){
+async function deleteResource(findingFunction, findingFunctionArgs, deletionQuery, queryParams, nodesToDelete = 1, relationshipsToDelete = null, db = process.env.ARCHIVE_DB){
+    let driver, sess;
 
-  const promise = new Promise( (resolve, reject) => {
-    (async () => {
-      let driver, sess;
-
-      try{
+    try{
         driver = connect();
         // eslint-disable-next-line no-undef
         sess = driver.session(getSessionOptions(db));
-      }catch(e){
-        reject(new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e));
-        return;
-      }
-      
-      let resource = [];
-  
-      try{
-        resource = await findingFunction(...findingFunctionArgs);
-      }catch(e){
-        await close(driver, sess);
-        reject(new InternalError(ArchiveError.RESOURCE_SEARCH_ERROR, 1002, e));
-        return;
-      }
+    }catch(e){
+        throw new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e);
+    }
     
-      if(resource.length === 0){
-        await close(driver, sess);
-        reject(new ArchiveError(ArchiveError.COULD_NOT_FIND_RESOURCE, 2007));
-        return;
-      }else{
-        try{
-          let txc = sess.beginTransaction();
-          
-          const match = await txc.run(deletionQuery, queryParams);
-  
-          const nodesDeleted = match.summary.updateStatistics._stats.nodesDeleted;
-          const relationshipsDeleted = match.summary.updateStatistics._stats.relationshipsDeleted;
-          
-          if(nodesDeleted === nodesToDelete && (relationshipsToDelete === null || relationshipsToDelete === relationshipsDeleted)){
-            await txc.commit();
-            resolve();
-            return;
-          }else{
-            await txc.rollback();
-            reject(new InternalError(ArchiveError.NODES_DELETED_UNEXPECTED_NUMBER, 1008, `expected: ${nodesToDelete}, tried: ${nodesDeleted}`));
-            return;
-          }
-        }catch(e){
-          if(e.toString().indexOf(DBError.STILL_HAS_RELATIONSHIPS_ERROR_STR)>=0){
-            reject(new ArchiveError(ArchiveError.RESOURCE_HAS_RELATIONSHIPS, 2008))
-            return;
-          }else{
-            reject(new InternalError(ArchiveError.COULD_NOT_DELETE_RESOURCE, 1004, e));
-            return;
-          }
-        }finally{
-          await close(driver, sess);
-        }
-      }
-    })()
-  });
+    let resource = [];
 
-  return promise;
+    try{
+        resource = await findingFunction(...findingFunctionArgs);
+    }catch(e){
+        await close(driver, sess);
+        throw new InternalError(ArchiveError.RESOURCE_SEARCH_ERROR, 1002, e);
+    }
+
+    if(resource.length === 0){
+        await close(driver, sess);
+        throw new ArchiveError(ArchiveError.COULD_NOT_FIND_RESOURCE, 2007);
+    }else{
+        try{
+            let txc = sess.beginTransaction();
+            
+            const match = await txc.run(deletionQuery, queryParams);
+
+            const nodesDeleted = match.summary.updateStatistics._stats.nodesDeleted;
+            const relationshipsDeleted = match.summary.updateStatistics._stats.relationshipsDeleted;
+            
+            if(nodesDeleted === nodesToDelete && (relationshipsToDelete === null || relationshipsToDelete === relationshipsDeleted)){
+                await txc.commit();
+                return;
+            }else{
+                await txc.rollback();
+                throw new InternalError(ArchiveError.NODES_DELETED_UNEXPECTED_NUMBER, 1008, `expected: ${nodesToDelete}, tried: ${nodesDeleted}`);
+            }
+        }catch(e){
+            if(e instanceof DataError || e instanceof InternalError){
+                throw e;
+            }else if(e.toString().indexOf(DBError.STILL_HAS_RELATIONSHIPS_ERROR_STR)>=0){
+                throw new ArchiveError(ArchiveError.RESOURCE_HAS_RELATIONSHIPS, 2008);
+            }else{
+                throw new InternalError(ArchiveError.COULD_NOT_DELETE_RESOURCE, 1004, e);
+            }
+        }finally{
+            await close(driver, sess);
+        }
+    }
 }
 
 // eslint-disable-next-line no-undef
