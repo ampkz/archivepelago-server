@@ -115,26 +115,15 @@ exports.serverInit = async function (logging=true, defaultAdmin = false){
   }
 }
 
-exports.destroyTestingDBs = function(){
-  const promise = new Promise( (resolve, reject) => {
-    (async () => {
-      const driver = connect();
-      let session = driver.session({database: `${process.env.ARCHIVE_DB}test`});
+exports.destroyTestingDBs = async function(){
+  const driver = connect();
+  let session = driver.session({database: `${process.env.ARCHIVE_DB}test`});
 
-      try{
-        await session.run(`DROP DATABASE ${process.env.USERS_DB}test IF EXISTS DESTROY DATA WAIT`);
-        await session.run(`DROP DATABASE ${process.env.ARCHIVE_DB}test IF EXISTS DESTROY DATA WAIT`);
-        resolve();
-        return;
-      }catch(e){
-        reject(e);
-        return;
-      }finally{
-        await close(driver, session);
-      }
-
-    })();
-  });
-
-  return promise;
+  try{
+    await session.run(`DROP DATABASE ${process.env.USERS_DB}test IF EXISTS DESTROY DATA WAIT`);
+    await session.run(`DROP DATABASE ${process.env.ARCHIVE_DB}test IF EXISTS DESTROY DATA WAIT`);
+    return;
+  }finally{
+    await close(driver, session);
+  }
 }
