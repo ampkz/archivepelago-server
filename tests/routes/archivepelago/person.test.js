@@ -127,3 +127,37 @@ describe (`${uriConfig.api + uriConfig.person} Routes`, () => {
   })
 
 })
+
+describe(`${uriConfig.api + uriConfig.person}/:personId GET Routes`, () => {
+  it(`should return http status of 404 on GET with unknow person id`, (done) => {
+    supertest(server).get(`${uriConfig.api + uriConfig.person}/unknownid`)
+      .expect(404)
+      .then(() => {
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      })
+  })
+
+  it(`should return http status of 200 with person on GET`, async (done) => {
+    let person;
+    try{
+      person = await archiveNeo4jPerson.createPerson(faker.name.lastName(), faker.name.firstName(), faker.name.middleName());
+    }catch(e){
+      console.log(e);
+    }
+
+    supertest(server).get(`${uriConfig.api + uriConfig.person}/${person.record.properties.id}`)
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toEqual(person.record.properties);
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      })
+
+  })
+
+})

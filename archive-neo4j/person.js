@@ -7,3 +7,7 @@ exports.createPerson = function(lastName, firstName, secondName) {
 exports.getPeople = function(){
   return getResource(findResource, [`MATCH (p:PERSON) RETURN p`]);
 }
+
+exports.getPerson = function(id){
+  return getResource(findResource, [`MATCH (p:PERSON {id: $id}) RETURN p`, {id}]);
+}

@@ -128,4 +128,6 @@ router.post(uriConfig.person, permitRoles(Auth.ADMIN, Auth.CONTRIBUTOR), personR
  */
 router.get(uriConfig.person, personRoutes.getPeople);
 
+router.get(`${uriConfig.person}/:personId`, personRoutes.getPerson);
+
 module.exports = router;

@@ -33,3 +33,15 @@ exports.getPeople = function(req, res, next){
     return handleResourceError(error, next, req);
   })
 }
+
+exports.getPerson = function(req, res, next){
+  const { personId } = req.params;
+
+  archiveNeo4jPerson.getPerson(personId)
+    .then((person) => {
+      return res.status(200).json(person.properties);
+    })
+    .catch((error) => {
+      return handleResourceError(error, next, req);
+    })
+}
