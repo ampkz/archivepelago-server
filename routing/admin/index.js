@@ -4,7 +4,7 @@ const router = express.Router();
 const { permitRoles } = require("../../middleware/auth");
 const { sendStatus405 } = require('../../middleware/errors');
 const { Auth } = require('../../_helpers/auth');
-const archiveNeo4jUsers = require('../routes/users');
+const archiveNeo4jUsers = require('../routes/user');
 
 /**
  * @swagger
@@ -78,7 +78,7 @@ const archiveNeo4jUsers = require('../routes/users');
 
 /**
  * @swagger
- * /admin/users:
+ * /admin/user:
  *   post:
  *     summary: Create new user. (Must Be Admin)
  *     tags:
@@ -154,11 +154,11 @@ const archiveNeo4jUsers = require('../routes/users');
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
  *             
  */
-router.post('/users', permitRoles(Auth.ADMIN), archiveNeo4jUsers.createUser);
+router.post('/user', permitRoles(Auth.ADMIN), archiveNeo4jUsers.createUser);
 
 /**
  * @swagger
- * /admin/users:
+ * /admin/user:
  *   get:
  *     summary: Retrieve a list of users. (Must Be Admin)
  *     tags:
@@ -186,12 +186,12 @@ router.post('/users', permitRoles(Auth.ADMIN), archiveNeo4jUsers.createUser);
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
  *             
  */
-router.get('/users', permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUsers);
+router.get('/user', permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUsers);
 
 
 /**
  * @swagger
- * /admin/users:
+ * /admin/user:
  *   delete:
  *     summary: Method not allowed.
  *     tags:
@@ -206,11 +206,11 @@ router.get('/users', permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUsers);
  *               example: 'POST'
  *             description: The methods allowed at this endpoint.
  */
-router.delete('/users', sendStatus405('POST, GET'));
+router.delete('/user', sendStatus405('POST, GET'));
 
  /**
  * @swagger
- * /admin/users:
+ * /admin/user:
  *   put:
  *     summary: Method not allowed.
  *     tags:
@@ -225,11 +225,11 @@ router.delete('/users', sendStatus405('POST, GET'));
  *               example: 'POST'
  *             description: The methods allowed at this endpoint.
  */
-router.put('/users', sendStatus405('POST, GET'));
+router.put('/user', sendStatus405('POST, GET'));
 
 /**
  * @swagger
- * /admin/users/{userid}:
+ * /admin/user/{userid}:
  *   post:
  *     summary: Method not allowed.
  *     parameters:
@@ -251,12 +251,12 @@ router.put('/users', sendStatus405('POST, GET'));
  *               example: 'GET, DELETE, PUT'
  *             description: The methods allowed at this endpoint.
  */
-router.post('/users/:userId', sendStatus405('GET, DELETE, PUT'));
+router.post('/user/:userId', sendStatus405('GET, DELETE, PUT'));
 
 
  /**
  * @swagger
- * /admin/users/{userid}:
+ * /admin/user/{userid}:
  *   get:
  *     summary: Get user by userId.
  *     parameters:
@@ -291,11 +291,11 @@ router.post('/users/:userId', sendStatus405('GET, DELETE, PUT'));
  *         description: User not found.
  * 
  */
-router.get('/users/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.getUser);
+router.get('/user/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.getUser);
 
 /**
  * @swagger
- * /admin/users/{userid}:
+ * /admin/user/{userid}:
  *   put:
  *     summary: Update user.
  *     parameters:
@@ -373,11 +373,11 @@ router.get('/users/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4j
  *       404:
  *         description: User not found.
  */
- router.put('/users/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.updateUser);
+ router.put('/user/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.updateUser);
 
 /**
  * @swagger
- * /admin/users/{userid}:
+ * /admin/user/{userid}:
  *   delete:
  *     summary: Delete user.
  *     parameters:
@@ -407,6 +407,6 @@ router.get('/users/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4j
  *       404:
  *         description: User not found.
  * */
- router.delete('/users/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.deleteUser);
+ router.delete('/user/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.deleteUser);
 
 module.exports = router;

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { sendStatus405 } = require('../../middleware/errors');
-const archiveNeo4jUsers = require('../routes/users');
+const archiveNeo4jUsers = require('../routes/user');
 
 /**
  * @swagger

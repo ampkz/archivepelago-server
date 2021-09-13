@@ -4,12 +4,12 @@ exports.admin = '/admin';
 exports.api = '/api';
 
 //LOCATIONS
-exports.location = '/locations';
-exports.geoLocations = '/geo-locations';
-exports.country = '/countries';
-exports.state = '/states';
-exports.city = '/cities';
-exports.address = '/addresses';
+exports.location = '/location';
+exports.geoLocations = '/geo-location';
+exports.country = '/country';
+exports.state = '/state';
+exports.city = '/city';
+exports.address = '/address';
 exports.line1 = '/line1';
 exports.line2 = '/line2';
 exports.postalCode = '/postalCode';
@@ -18,15 +18,15 @@ exports.postalCode = '/postalCode';
 exports.person = '/people';
 
 //DATES
-exports.date = '/dates';
-exports.timeline = '/timelines';
-exports.year = '/years';
-exports.month = '/months';
-exports.day = '/days';
+exports.date = '/date';
+exports.timeline = '/timeline';
+exports.year = '/year';
+exports.month = '/month';
+exports.day = '/day';
 
 //ARCHIVES
-exports.archive = '/archives';
-exports.collection = '/collections';
-exports.repository = '/respositories';
-exports.library = '/libraries';
-exports.institution = '/institutions';
+exports.archive = '/archive';
+exports.collection = '/collection';
+exports.repository = '/respository';
+exports.library = '/library';
+exports.institution = '/institution';

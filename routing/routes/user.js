@@ -1,6 +1,6 @@
 const { Auth, signToken, checkRoleEscalation } = require('../../_helpers/auth');
 const { UserError, RoutingError, FieldError, ArchiveError } = require('../../_helpers/errors');
-const archiveNeo4jUsers = require('../../archive-neo4j/users');
+const archiveNeo4jUsers = require('../../archive-neo4j/user');
 const { sendError401, createError } = require("../../middleware/errors");
 const { processError, handleResourceError } = require('./utils');
 

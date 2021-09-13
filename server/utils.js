@@ -6,7 +6,7 @@ const { Archive } = require('../_helpers/archive');
 const { getSessionOptions } = require('../_helpers/db');
 const readline = require('readline');
 const Writable = require('stream').Writable;
-const archiveNeo4jUsers = require('../archive-neo4j/users');
+const archiveNeo4jUsers = require('../archive-neo4j/user');
 
 let mutableStdout = new Writable({
   write: function(chunk, encoding, callback) {
