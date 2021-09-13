@@ -34,23 +34,47 @@ const userRoutes = require('../routes/user');
  *           type: string
  *           required: true
  *           description: User's first name.
- *           example: Jane
+ *           example: Alice
  *         lastName:
  *           type: string
  *           required: true
  *           description: User's last name.
- *           example: Doe
+ *           example: Toklas
  *         secondName:
  *           type: string
  *           required: false
  *           description: User's second/middle name.
- *           example: Lilly
+ *           example: Babette
  *         auth:
  *           type: string
  *           required: true
  *           enum: [admin, contributor]
  *           example: admin
  *           description: User's authentication role.
+ *     Person:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *           required: true
+ *           description: Person's ID.
+ *           example: cf52bde2-d3ff-4e2b-95f0-8461e0d70edc
+ *         lastName:
+ *           type: string
+ *           required: true
+ *           description: User's last name.
+ *           example: Toklas
+ *         firstName:
+ *           type: string
+ *           required: true
+ *           description: User's first name.
+ *           example: Alice
+ *         secondName:
+ *           type: string
+ *           required: false
+ *           description: User's second/middle name.
+ *           example: Babette
  *     FieldErrorMessage:
  *       type: object
  *       properties:
@@ -99,17 +123,17 @@ const userRoutes = require('../routes/user');
  *               firstName:
  *                 required: true
  *                 type: string
- *                 example: Jane
+ *                 example: Alice
  *                 description: User's first name.
  *               lastName:
  *                 required: true
  *                 type: string
- *                 example: Doe
+ *                 example: Toklas
  *                 description: User's last name.
  *               secondName:
  *                 required: false
  *                 type: string
- *                 example: Lilly
+ *                 example: Babette
  *                 description: User's second/middle name.
  *               auth:
  *                 required: true
@@ -323,17 +347,17 @@ router.get(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), u
  *               firstName:
  *                 required: true
  *                 type: string
- *                 example: Jane
+ *                 example: Alice
  *                 description: User's new or current first name.
  *               lastName:
  *                 required: true
  *                 type: string
- *                 example: Doe
+ *                 example: Toklas
  *                 description: User's new or current last name.
  *               secondName:
  *                 required: false
  *                 type: string
- *                 example: Lilly
+ *                 example: Babette
  *                 description: User's new or current second/middle name.
  *               auth:
  *                 required: true
