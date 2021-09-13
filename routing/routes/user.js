@@ -31,7 +31,7 @@ exports.createUser = function(req, res, next){
 
     archiveNeo4jUsers.createUser(email, nameObj, auth, password)
         .then(user => {
-            res.set('Location', `/${user.properties.id}`).status(201).json(user.properties);
+            return res.set('Location', `/${user.properties.id}`).status(201).json(user.properties);
         })
         .catch(error => {
             let status,
@@ -76,7 +76,7 @@ exports.authenticate = function(req, res, next){
     archiveNeo4jUsers.checkPassword(email, password)
         .then(user =>{
             // eslint-disable-next-line no-undef
-            res.status(204).cookie('jwt', signToken(user.id, user.auth, process.env.TOKEN_EXPIRATION), {httpOnly: true, maxAge: Number(process.env.COOKIE_EXPIRATION), sameSite: true}).end();
+            return res.status(204).cookie('jwt', signToken(user.id, user.auth, process.env.TOKEN_EXPIRATION), {httpOnly: true, maxAge: Number(process.env.COOKIE_EXPIRATION), sameSite: true}).end();
         })
         .catch(error => {
             if(error === 401)
@@ -98,7 +98,7 @@ exports.getUsers = function(req, res, next){
     archiveNeo4jUsers.getUsers()
         .then(users => {
             if(!users.map) users = [users];
-            res.status(200).json(users.map(user => { return prepReturnUser(user);}));
+            return res.status(200).json(users.map(user => { return prepReturnUser(user);}));
         })
         .catch(error => {
             return handleResourceError(error, next, req);
@@ -122,7 +122,7 @@ exports.deleteUser = function(req, res, next){
 
     archiveNeo4jUsers.deleteUser(userId)
         .then(() => {
-            res.status(204).end();
+            return res.status(204).end();
         })
         .catch(error => {
             return handleResourceError(error, next, req);
@@ -167,14 +167,14 @@ exports.updateUser = function(req, res, next){
                     .then(response => {
                         const preppedUser = prepReturnUser(updatedUser.record);
                         preppedUser.password = response;
-                        res.status(200).json(preppedUser);
-                        return;
+                        return res.status(200).json(preppedUser);
+                        
                     })
                     .catch(error => {
                         return handleResourceError(error, next, req);
                     })
             }else{
-                res.status(200).json(prepReturnUser(updatedUser.record));
+                return res.status(200).json(prepReturnUser(updatedUser.record));
             }
         })
         .catch(error => {

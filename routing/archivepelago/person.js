@@ -106,4 +106,26 @@ router.put(uriConfig.person, sendStatus405('GET, POST'));
  */
 router.post(uriConfig.person, permitRoles(Auth.ADMIN, Auth.CONTRIBUTOR), personRoutes.createPerson);
 
+/**
+ * @swagger
+ * /person:
+ *   get:
+ *     summary: Retrieve a list of people.
+ *     tags:
+ *       - Person
+ *     responses:
+ *       200:
+ *         description: A list of retrieved people.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Person'
+ *       404:
+ *         description: No person found.
+ *             
+ */
+router.get(uriConfig.person, personRoutes.getPeople);
+
 module.exports = router;

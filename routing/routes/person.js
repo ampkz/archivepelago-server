@@ -15,10 +15,21 @@ exports.createPerson = function(req, res, next){
 
   archiveNeo4jPerson.createPerson(lastName, firstName || '', secondName || '')
     .then((person) => {
-      res.set('Location', `/${person.record.properties.id}`).status(201).json(person.record.properties);
+      return res.set('Location', `/${person.record.properties.id}`).status(201).json(person.record.properties);
     })
     .catch((error) => {
       return handleResourceError(error, next, req);
     })
 
+}
+
+exports.getPeople = function(req, res, next){
+  archiveNeo4jPerson.getPeople()
+  .then((people) => {
+    if(!people.map) people = [people];
+    return res.status(200).json(people.map((person) => { return person.properties }));
+  })
+  .catch((error) => {
+    return handleResourceError(error, next, req);
+  })
 }

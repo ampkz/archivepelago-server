@@ -10,11 +10,9 @@ const server = require('../../../server/server');
 const { serverInit, destroyTestingDBs } = require('../../../server/utils');
 const supertest = require("supertest");
 const uriConfig = require('../../../routing/uriConfig');
-// const { RoutingError, FieldError, EscalationError } = require("../../../_helpers/errors");
-// const { Auth } = require("../../../_helpers/auth");
 const faker = require('faker');
 const { RoutingError, FieldError } = require('../../../_helpers/errors');
-// const archiveNeo4jPerson = require('../../../archive-neo4j/person');
+const archiveNeo4jPerson = require('../../../archive-neo4j/person');
 
 beforeAll(async () => {
   await serverInit(false, true);
@@ -50,26 +48,6 @@ describe (`${uriConfig.api + uriConfig.person} Routes`, () => {
       })
   })
 
-  // it(`should return http status of 200 with list of people on GET`, async (done) => {
-  //   let person;
-  //   try{
-  //     person = await archiveNeo4jPerson.createPerson(faker.name.lastName(), faker.name.firstName(), faker.name.middleName());
-  //   }catch(e){
-  //     console.log(e);
-  //   }
-
-  //   supertest(server).get(uriCOnfig.api + uriConfig.person)
-  //     .expect(200)
-  //     .then((response) => {
-  //       expect(Array.isArray(response.body)).toBeTruthy();
-  //       expect(response.body).toContainEqual(person);
-  //       done();
-  //     })
-  //     .catch((error) => {
-  //       done(error);
-  //     })
-  // })
-
   it(`should return http status of 401 on POST without authorization cookie`, (done) => {
     supertest(server).post(uriConfig.api + uriConfig.person)
       .expect(401)
@@ -96,6 +74,17 @@ describe (`${uriConfig.api + uriConfig.person} Routes`, () => {
       })
   })
 
+  it(`should return http status of 404 on GET with no people`, (done) => {
+    supertest(server).get(uriConfig.api + uriConfig.person)
+      .expect(404)
+      .then(() => {
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      })
+  })
+
   it(`should return http status of 201 with Location header on POST with authorization cookie`, async (done) => {
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
@@ -110,6 +99,26 @@ describe (`${uriConfig.api + uriConfig.person} Routes`, () => {
         expect(response.body.lastName).toBe(lastName);
         expect(response.body.firstName).toBe(firstName);
         expect(response.body.secondName).toBe(secondName);
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      })
+  })
+
+  it(`should return http status of 200 with list of people on GET`, async (done) => {
+    let person;
+    try{
+      person = await archiveNeo4jPerson.createPerson(faker.name.lastName(), faker.name.firstName(), faker.name.middleName());
+    }catch(e){
+      console.log(e);
+    }
+
+    supertest(server).get(uriConfig.api + uriConfig.person)
+      .expect(200)
+      .then((response) => {
+        expect(Array.isArray(response.body)).toBeTruthy();
+        expect(response.body).toContainEqual(person.record.properties);
         done();
       })
       .catch((error) => {

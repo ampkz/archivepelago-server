@@ -172,7 +172,6 @@ async function findResource(query, queryParams={}, session=null, db = process.en
 
   if(session === null){
     driver = connect();
-    // eslint-disable-next-line no-undef
     sess = driver.session(getSessionOptions(db));
   }else{
     sess = session;
