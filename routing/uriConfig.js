@@ -3,9 +3,12 @@ exports.baseURL = 'http://localhost:3001';
 exports.admin = '/admin';
 exports.api = '/api';
 
+//USERS
+exports.user = '/user';
+
 //LOCATIONS
 exports.location = '/location';
-exports.geoLocations = '/geo-location';
+exports.geoLocation = '/geo-location';
 exports.country = '/country';
 exports.state = '/state';
 exports.city = '/city';

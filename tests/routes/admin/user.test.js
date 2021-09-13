@@ -100,9 +100,9 @@ describe(`${uriConfig.api}/authenticate Routes`, () => {
     })
 })
 
-describe(`${uriConfig.api + uriConfig.admin}/user Routes`, () => {
+describe(`${uriConfig.api + uriConfig.admin + uriConfig.user} Routes`, () => {
     it(`should send http status of 405 with Allow header 'POST, GET' on PUT`, done => {
-        supertest(server).put(`${uriConfig.api + uriConfig.admin}/user`)
+        supertest(server).put(`${uriConfig.api + uriConfig.admin + uriConfig.user}`)
             .expect(405)
                 .then(response => {
                     expect(response.headers.allow).toBe('POST, GET');
@@ -114,7 +114,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user Routes`, () => {
     })
 
     it(`should send http status of 405 with Allow header 'POST, GET' on DELETE`, done => {
-        supertest(server).delete(`${uriConfig.api + uriConfig.admin}/user`)
+        supertest(server).delete(`${uriConfig.api + uriConfig.admin + uriConfig.user}`)
             .expect(405)
                 .then(response => {
                     expect(response.headers.allow).toBe('POST, GET');
@@ -128,7 +128,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user Routes`, () => {
     it(`should return http status of 400 with required fields on POST without required fields`, async done => {
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-        agent.post(`${uriConfig.api + uriConfig.admin}/user`)
+        agent.post(`${uriConfig.api + uriConfig.admin + uriConfig.user}`)
             .expect(400)
             .then(response => {
                 expect(response.body.message).toBe(RoutingError.INVALID_REQUEST);
@@ -152,7 +152,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user Routes`, () => {
         const secondName = faker.name.middleName();
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-        agent.post(`${uriConfig.api + uriConfig.admin}/user`)
+        agent.post(`${uriConfig.api + uriConfig.admin + uriConfig.user}`)
             .send({email, password, firstName, lastName, secondName, auth: 'invalid auth'})
             .expect(400)
             .then(response => {
@@ -174,7 +174,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user Routes`, () => {
         const auth = Auth.ADMIN;
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-        agent.post(`${uriConfig.api + uriConfig.admin}/user`)
+        agent.post(`${uriConfig.api + uriConfig.admin + uriConfig.user}`)
             .send({email, password, firstName, lastName, secondName, auth})
             .expect(201)
             .then(response => {
@@ -192,7 +192,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user Routes`, () => {
     })
 
     it(`should return http status of 401 with Authorization realm header on POST without authorization cookie`, done => {
-        supertest(server).post(`${uriConfig.api + uriConfig.admin}/user`)
+        supertest(server).post(`${uriConfig.api + uriConfig.admin + uriConfig.user}`)
             .expect(401)
             .then(response => {
                 expect(response.headers['www-authenticate']).toBe(`xBasic realm="${process.env.AUTH_REALM}"`);
@@ -209,7 +209,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user Routes`, () => {
         await archiveNeo4jUsers.createUser(email, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, password)
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
-        agent.post(`${uriConfig.api + uriConfig.admin}/user`)
+        agent.post(`${uriConfig.api + uriConfig.admin + uriConfig.user}`)
             .expect(403)
             .then(() => {
                 done();
@@ -220,7 +220,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user Routes`, () => {
     })
 
     it(`should return http status of 401 with Authorization realm header on GET without authorization cookie`, done => {
-        supertest(server).get(`${uriConfig.api + uriConfig.admin}/user`)
+        supertest(server).get(`${uriConfig.api + uriConfig.admin + uriConfig.user}`)
             .expect(401)
             .then(response => {
                 expect(response.headers['www-authenticate']).toBe(`xBasic realm="${process.env.AUTH_REALM}"`);
@@ -237,7 +237,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user Routes`, () => {
         await archiveNeo4jUsers.createUser(email, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, password)
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
-        agent.get(`${uriConfig.api + uriConfig.admin}/user`)
+        agent.get(`${uriConfig.api + uriConfig.admin + uriConfig.user}`)
             .expect(403)
             .then(() => {
                 done();
@@ -257,7 +257,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user Routes`, () => {
         }
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-        agent.get(`${uriConfig.api + uriConfig.admin}/user`)
+        agent.get(`${uriConfig.api + uriConfig.admin + uriConfig.user}`)
             .expect(200)
             .then(response => {
                 expect(Array.isArray(response.body)).toBeTruthy();
@@ -271,9 +271,9 @@ describe(`${uriConfig.api + uriConfig.admin}/user Routes`, () => {
     
 })
 
-describe(`${uriConfig.api + uriConfig.admin}/user/:userId GET Routes`, () => {
+describe(`${uriConfig.api + uriConfig.admin + uriConfig.user}/:userId GET Routes`, () => {
     it(`should return http status of 401 with Authorization realm header on GET without authorization cookie`, done => {
-        supertest(server).get(`${uriConfig.api + uriConfig.admin}/user/userId`)
+        supertest(server).get(`${uriConfig.api + uriConfig.admin + uriConfig.user}/userId`)
             .expect(401)
             .then(response => {
                 expect(response.headers['www-authenticate']).toBe(`xBasic realm="${process.env.AUTH_REALM}"`);
@@ -290,7 +290,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId GET Routes`, () => {
         await archiveNeo4jUsers.createUser(email, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, password)
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
-        agent.get(`${uriConfig.api + uriConfig.admin}/user/userId`)
+        agent.get(`${uriConfig.api + uriConfig.admin + uriConfig.user}/userId`)
             .expect(403)
             .then(() => {
                 done();
@@ -309,7 +309,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId GET Routes`, () => {
         }
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-        agent.get(`${uriConfig.api + uriConfig.admin}/user/${user.properties.id}`)
+        agent.get(`${uriConfig.api + uriConfig.admin + uriConfig.user}/${user.properties.id}`)
             .expect(200)
             .then(response => {
                 expect(response.body).toEqual(user.properties)
@@ -331,7 +331,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId GET Routes`, () => {
         }
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
-        agent.get(`${uriConfig.api + uriConfig.admin}/user/${user.properties.id}`)
+        agent.get(`${uriConfig.api + uriConfig.admin + uriConfig.user}/${user.properties.id}`)
             .expect(200)
             .then(response => {
                 expect(response.body).toEqual(user.properties)
@@ -345,7 +345,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId GET Routes`, () => {
     it(`should return http status of 404 on GET with unknown userid and authorization cookie`, async done => {
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-        agent.get(`${uriConfig.api + uriConfig.admin}/user/userid`)
+        agent.get(`${uriConfig.api + uriConfig.admin + uriConfig.user}/userid`)
             .expect(404)
             .then(() => {
                 done();
@@ -356,9 +356,9 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId GET Routes`, () => {
     })
 });
 
-describe(`${uriConfig.api + uriConfig.admin}/user/:userId DELETE Routes`, () => {
+describe(`${uriConfig.api + uriConfig.admin + uriConfig.user}/:userId DELETE Routes`, () => {
     it(`should return http status of 401 with Authorization realm header on DELETE without authorization cookie`, done => {
-        supertest(server).delete(`${uriConfig.api + uriConfig.admin}/user/userId`)
+        supertest(server).delete(`${uriConfig.api + uriConfig.admin + uriConfig.user}/userId`)
             .expect(401)
             .then(response => {
                 expect(response.headers['www-authenticate']).toBe(`xBasic realm="${process.env.AUTH_REALM}"`);
@@ -375,7 +375,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId DELETE Routes`, () => 
         await archiveNeo4jUsers.createUser(email, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, password)
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
-        agent.delete(`${uriConfig.api + uriConfig.admin}/user/userId`)
+        agent.delete(`${uriConfig.api + uriConfig.admin + uriConfig.user}/userId`)
             .expect(403)
             .then(() => {
                 done();
@@ -395,7 +395,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId DELETE Routes`, () => 
         
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-        agent.delete(`${uriConfig.api + uriConfig.admin}/user/${user.properties.id}`)
+        agent.delete(`${uriConfig.api + uriConfig.admin + uriConfig.user}/${user.properties.id}`)
             .expect(204)
             .then(() => {
                 done();
@@ -418,7 +418,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId DELETE Routes`, () => 
         
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
-        agent.delete(`${uriConfig.api + uriConfig.admin}/user/${user.properties.id}`)
+        agent.delete(`${uriConfig.api + uriConfig.admin + uriConfig.user}/${user.properties.id}`)
             .expect(204)
             .then(() => {
                 done();
@@ -431,7 +431,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId DELETE Routes`, () => 
     it(`should return http status of 404 on DELETE with unknown userid and authorization cookie`, async done => {
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-        agent.delete(`${uriConfig.api + uriConfig.admin}/user/userid`)
+        agent.delete(`${uriConfig.api + uriConfig.admin + uriConfig.user}/userid`)
             .expect(404)
             .then(() => {
                 done();
@@ -442,9 +442,9 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId DELETE Routes`, () => 
     })
 });
 
-describe(`${uriConfig.api + uriConfig.admin}/user/:userId PUT Routes`, () => {
+describe(`${uriConfig.api + uriConfig.admin + uriConfig.user}/:userId PUT Routes`, () => {
     it(`should return http status of 401 with Authorization realm header on PUT without authorization cookie`, done => {
-        supertest(server).put(`${uriConfig.api + uriConfig.admin}/user/userId`)
+        supertest(server).put(`${uriConfig.api + uriConfig.admin + uriConfig.user}/userId`)
             .expect(401)
             .then(response => {
                 expect(response.headers['www-authenticate']).toBe(`xBasic realm="${process.env.AUTH_REALM}"`);
@@ -461,7 +461,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId PUT Routes`, () => {
         await archiveNeo4jUsers.createUser(email, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, password)
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
-        agent.put(`${uriConfig.api + uriConfig.admin}/user/userId`)
+        agent.put(`${uriConfig.api + uriConfig.admin + uriConfig.user}/userId`)
             .expect(403)
             .then(() => {
                 done();
@@ -479,7 +479,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId PUT Routes`, () => {
         const auth = Auth.CONTRIBUTOR;
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-        agent.put(`${uriConfig.api + uriConfig.admin}/user/userid`)
+        agent.put(`${uriConfig.api + uriConfig.admin + uriConfig.user}/userid`)
             .send({email, firstName, lastName, secondName, auth})
             .expect(404)
             .then(() => {
@@ -506,7 +506,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId PUT Routes`, () => {
 
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-        agent.put(`${uriConfig.api + uriConfig.admin}/user/${user.properties.id}`)
+        agent.put(`${uriConfig.api + uriConfig.admin + uriConfig.user}/${user.properties.id}`)
             .send({email, firstName, lastName, secondName, auth, password})
             .expect(200)
             .then(response => {
@@ -540,7 +540,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId PUT Routes`, () => {
 
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: origEmail, password: origPassword});
-        agent.put(`${uriConfig.api + uriConfig.admin}/user/${user.properties.id}`)
+        agent.put(`${uriConfig.api + uriConfig.admin + uriConfig.user}/${user.properties.id}`)
             .send({email, firstName, lastName, secondName, auth})
             .expect(200)
             .then(response => {
@@ -573,7 +573,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId PUT Routes`, () => {
 
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: origEmail, password: origPassword});
-        agent.put(`${uriConfig.api + uriConfig.admin}/user/${user.properties.id}`)
+        agent.put(`${uriConfig.api + uriConfig.admin + uriConfig.user}/${user.properties.id}`)
             .send({email, firstName, lastName, secondName, auth})
             .expect(403)
             .then((response) => {
@@ -594,7 +594,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId PUT Routes`, () => {
         }
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-        agent.put(`${uriConfig.api + uriConfig.admin}/user/${user.properties.id}`)
+        agent.put(`${uriConfig.api + uriConfig.admin + uriConfig.user}/${user.properties.id}`)
             .expect(400)
             .then(response => {
                 expect(response.body.message).toBe(RoutingError.INVALID_REQUEST);
@@ -625,7 +625,7 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId PUT Routes`, () => {
         
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
-        agent.put(`${uriConfig.api + uriConfig.admin}/user/${user.properties.id}`)
+        agent.put(`${uriConfig.api + uriConfig.admin + uriConfig.user}/${user.properties.id}`)
             .send({email, firstName, lastName, secondName, auth: 'invalid auth'})
             .expect(400)
             .then(response => {
@@ -639,9 +639,9 @@ describe(`${uriConfig.api + uriConfig.admin}/user/:userId PUT Routes`, () => {
     })
 });
 
-describe(`${uriConfig.api + uriConfig.admin}/user/:userId Routes`, () => {
+describe(`${uriConfig.api + uriConfig.admin + uriConfig.user}/:userId Routes`, () => {
     it(`should return http status of 405 with Allow header 'GET, DELETE, PUT' on POST`, done => {
-        supertest(server).post(`${uriConfig.api + uriConfig.admin}/user/userid`)
+        supertest(server).post(`${uriConfig.api + uriConfig.admin + uriConfig.user}/userid`)
             .expect(405)
             .then(response => {
                 expect(response.headers.allow).toBe('GET, DELETE, PUT');

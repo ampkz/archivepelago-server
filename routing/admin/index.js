@@ -4,6 +4,7 @@ const router = express.Router();
 const { permitRoles } = require("../../middleware/auth");
 const { sendStatus405 } = require('../../middleware/errors');
 const { Auth } = require('../../_helpers/auth');
+const uriConfig = require('../uriConfig');
 const archiveNeo4jUsers = require('../routes/user');
 
 /**
@@ -154,7 +155,7 @@ const archiveNeo4jUsers = require('../routes/user');
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
  *             
  */
-router.post('/user', permitRoles(Auth.ADMIN), archiveNeo4jUsers.createUser);
+router.post(uriConfig.user, permitRoles(Auth.ADMIN), archiveNeo4jUsers.createUser);
 
 /**
  * @swagger
@@ -186,7 +187,7 @@ router.post('/user', permitRoles(Auth.ADMIN), archiveNeo4jUsers.createUser);
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
  *             
  */
-router.get('/user', permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUsers);
+router.get(uriConfig.user, permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUsers);
 
 
 /**
@@ -206,7 +207,7 @@ router.get('/user', permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUsers);
  *               example: 'POST'
  *             description: The methods allowed at this endpoint.
  */
-router.delete('/user', sendStatus405('POST, GET'));
+router.delete(uriConfig.user, sendStatus405('POST, GET'));
 
  /**
  * @swagger
@@ -225,7 +226,7 @@ router.delete('/user', sendStatus405('POST, GET'));
  *               example: 'POST'
  *             description: The methods allowed at this endpoint.
  */
-router.put('/user', sendStatus405('POST, GET'));
+router.put(uriConfig.user, sendStatus405('POST, GET'));
 
 /**
  * @swagger
@@ -251,7 +252,7 @@ router.put('/user', sendStatus405('POST, GET'));
  *               example: 'GET, DELETE, PUT'
  *             description: The methods allowed at this endpoint.
  */
-router.post('/user/:userId', sendStatus405('GET, DELETE, PUT'));
+router.post(`${uriConfig.user}/:userId`, sendStatus405('GET, DELETE, PUT'));
 
 
  /**
@@ -291,7 +292,7 @@ router.post('/user/:userId', sendStatus405('GET, DELETE, PUT'));
  *         description: User not found.
  * 
  */
-router.get('/user/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.getUser);
+router.get(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.getUser);
 
 /**
  * @swagger
@@ -373,7 +374,7 @@ router.get('/user/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jU
  *       404:
  *         description: User not found.
  */
- router.put('/user/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.updateUser);
+ router.put(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.updateUser);
 
 /**
  * @swagger
@@ -407,6 +408,6 @@ router.get('/user/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jU
  *       404:
  *         description: User not found.
  * */
- router.delete('/user/:userId', permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.deleteUser);
+ router.delete(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.deleteUser);
 
 module.exports = router;
