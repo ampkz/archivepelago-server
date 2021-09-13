@@ -13,7 +13,8 @@ const uriConfig = require('../../../routing/uriConfig');
 // const { RoutingError, FieldError, EscalationError } = require("../../../_helpers/errors");
 // const { Auth } = require("../../../_helpers/auth");
 const faker = require('faker');
-const archiveNeo4jPerson = require('../../../archive-neo4j/person');
+const { RoutingError, FieldError } = require('../../../_helpers/errors');
+// const archiveNeo4jPerson = require('../../../archive-neo4j/person');
 
 beforeAll(async () => {
   await serverInit(false, true);
@@ -73,6 +74,42 @@ describe (`${uriConfig.api + uriConfig.person} Routes`, () => {
     supertest(server).post(uriConfig.api + uriConfig.person)
       .expect(401)
       .then(() => {
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      })
+  })
+
+  it(`should return http status of 400 with required fields on POST with authorization cookie`, async (done) => {
+    const agent = supertest.agent(server);
+    await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+    agent.post(uriConfig.api + uriConfig.person)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe(RoutingError.INVALID_REQUEST);
+        expect(response.body.errors).toContainEqual({field: 'lastName', message: FieldError.REQUIRED});
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      })
+  })
+
+  it(`should return http status of 201 with Location header on POST with authorization cookie`, async (done) => {
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const secondName = faker.name.middleName();
+    const agent = supertest.agent(server);
+    await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+    agent.post(uriConfig.api + uriConfig.person)
+      .send({lastName, firstName, secondName})
+      .expect(201)
+      .then((response) => {
+        expect(response.headers.location).toBe(`/${response.body.id}`);
+        expect(response.body.lastName).toBe(lastName);
+        expect(response.body.firstName).toBe(firstName);
+        expect(response.body.secondName).toBe(secondName);
         done();
       })
       .catch((error) => {

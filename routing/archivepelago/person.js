@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const uriConfig = require('../uriConfig');
+const personRoutes = require('../routes/person');
+
 
 const { permitRoles } = require("../../middleware/auth");
 const { Auth } = require('../../_helpers/auth');
@@ -45,6 +47,6 @@ router.delete(uriConfig.person, sendStatus405('GET, POST'));
 router.put(uriConfig.person, sendStatus405('GET, POST'));
 
 
-router.post(uriConfig.person, permitRoles(Auth.ADMIN, Auth.CONTRIBUTOR), ()=>{});
+router.post(uriConfig.person, permitRoles(Auth.ADMIN, Auth.CONTRIBUTOR), personRoutes.createPerson);
 
 module.exports = router;
