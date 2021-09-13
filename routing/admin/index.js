@@ -5,7 +5,7 @@ const { permitRoles } = require("../../middleware/auth");
 const { sendStatus405 } = require('../../middleware/errors');
 const { Auth } = require('../../_helpers/auth');
 const uriConfig = require('../uriConfig');
-const archiveNeo4jUsers = require('../routes/user');
+const userRoutes = require('../routes/user');
 
 /**
  * @swagger
@@ -155,7 +155,7 @@ const archiveNeo4jUsers = require('../routes/user');
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
  *             
  */
-router.post(uriConfig.user, permitRoles(Auth.ADMIN), archiveNeo4jUsers.createUser);
+router.post(uriConfig.user, permitRoles(Auth.ADMIN), userRoutes.createUser);
 
 /**
  * @swagger
@@ -187,7 +187,7 @@ router.post(uriConfig.user, permitRoles(Auth.ADMIN), archiveNeo4jUsers.createUse
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
  *             
  */
-router.get(uriConfig.user, permitRoles(Auth.ADMIN), archiveNeo4jUsers.getUsers);
+router.get(uriConfig.user, permitRoles(Auth.ADMIN), userRoutes.getUsers);
 
 
 /**
@@ -292,7 +292,7 @@ router.post(`${uriConfig.user}/:userId`, sendStatus405('GET, DELETE, PUT'));
  *         description: User not found.
  * 
  */
-router.get(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.getUser);
+router.get(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), userRoutes.getUser);
 
 /**
  * @swagger
@@ -374,7 +374,7 @@ router.get(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), a
  *       404:
  *         description: User not found.
  */
- router.put(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.updateUser);
+ router.put(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), userRoutes.updateUser);
 
 /**
  * @swagger
@@ -408,6 +408,6 @@ router.get(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), a
  *       404:
  *         description: User not found.
  * */
- router.delete(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), archiveNeo4jUsers.deleteUser);
+ router.delete(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), userRoutes.deleteUser);
 
 module.exports = router;

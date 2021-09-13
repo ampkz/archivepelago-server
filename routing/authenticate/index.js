@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { sendStatus405 } = require('../../middleware/errors');
-const archiveNeo4jUsers = require('../routes/user');
+const userRoutes = require('../routes/user');
 
 /**
  * @swagger
@@ -47,7 +47,7 @@ const archiveNeo4jUsers = require('../routes/user');
  *             description: The authentication realm.
  *             
  */
- router.post('/authenticate', archiveNeo4jUsers.authenticate)
+ router.post('/authenticate', userRoutes.authenticate)
 
 
  /**
