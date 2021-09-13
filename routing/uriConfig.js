@@ -15,7 +15,7 @@ exports.line2 = '/line2';
 exports.postalCode = '/postalCode';
 
 //PEOPLE
-exports.person = '/people';
+exports.person = '/person';
 
 //DATES
 exports.date = '/date';
