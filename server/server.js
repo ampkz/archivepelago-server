@@ -12,6 +12,7 @@ global.__basedir = __dirname;
 const { errorHandler } = require("../middleware/errors");
 const admin = require('../routing/admin');
 const authenticate = require('../routing/authenticate');
+const person = require('../routing/archivepelago/person');
 
 app.use(cors({origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true}));
 app.use(cookieParser());
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(uriConfig.api, authenticate);
 app.use(uriConfig.api + uriConfig.admin, admin);
+app.use(uriConfig.api, person);
 
 // eslint-disable-next-line no-undef
 if(process.env.NODE_ENV !== 'test'){
@@ -58,7 +60,7 @@ if(process.env.NODE_ENV !== 'test'){
 	const options = {
 		swaggerDefinition,
 		// Paths to files containing OpenAPI definitions
-		apis: ['./routing/authenticate/*.js', './routing/api/*.js', './routing/admin/*.js'],
+		apis: ['./routing/authenticate/*.js', './routing/archivepelago/*.js', './routing/admin/*.js'],
 	};
 	
 	const swaggerSpec = swaggerJSDoc(options);
