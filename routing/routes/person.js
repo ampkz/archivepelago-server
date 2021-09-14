@@ -57,3 +57,24 @@ exports.deletePerson = function(req, res, next){
       return handleResourceError(error, next, req);
     })
 }
+
+exports.updatePerson = function(req, res, next){
+  const { lastName, firstName, secondName } = req.body;
+  const { personId } = req.params;
+
+  const required = new FieldError(RoutingError.INVALID_REQUEST, 3000);
+
+  if(!lastName) required.addFieldError('lastName', FieldError.REQUIRED);
+
+  if(required.hasErrors()){
+    return next(required);
+  }
+
+  archiveNeo4jPerson.updatePerson(personId, lastName, firstName, secondName)
+    .then((person) => {
+      return res.status(200).json(person.record.properties);
+    })
+    .catch((error) => {
+      return handleResourceError(error, next, req);
+    })
+}

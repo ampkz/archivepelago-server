@@ -212,8 +212,9 @@ describe(`${uriConfig.api + uriConfig.person}/:personId DELETE Routes`, () => {
 describe(`${uriConfig.api + uriConfig.person}/:personId PUT Routes`, () => {
   it(`should return http status of 401 on PUT without authorization cookie`, (done) => {
     supertest(server).put(`${uriConfig.api + uriConfig.person}/unknownid`)
-      .expect(404)
-        .then(() => {
+      .expect(401)
+        .then((response) => {
+          expect(response.headers['www-authenticate']).toBe(`xBasic realm="${process.env.AUTH_REALM}"`);
           done();
         })
         .catch((error) => {
@@ -225,6 +226,7 @@ describe(`${uriConfig.api + uriConfig.person}/:personId PUT Routes`, () => {
     const agent = supertest.agent(server);
     await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
     agent.put(`${uriConfig.api + uriConfig.person}/unknownid`)
+      .send({lastName: faker.name.lastName()})
       .expect(404)
       .then(() => {
         done();
