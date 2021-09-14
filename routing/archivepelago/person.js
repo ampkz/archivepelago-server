@@ -128,6 +128,41 @@ router.post(uriConfig.person, permitRoles(Auth.ADMIN, Auth.CONTRIBUTOR), personR
  */
 router.get(uriConfig.person, personRoutes.getPeople);
 
+/**
+ * @swagger
+ * /person/{personId}:
+ *   get:
+ *     summary: Get person by personId.
+ *     parameters:
+ *       - in: path
+ *         name: personId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID of the user.
+ *     tags:
+ *       - Users
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Retrieved person.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Person'
+ *       401:
+ *         description: Invalid authentication token.
+ *         headers:
+ *           WWW-Authenticate:
+ *             schema:
+ *               type: string
+ *               example: Archivepelago Authentication
+ *             description: The authentication realm.
+ *       404:
+ *         description: Person not found.
+ * 
+ */
 router.get(`${uriConfig.person}/:personId`, personRoutes.getPerson);
 
 module.exports = router;

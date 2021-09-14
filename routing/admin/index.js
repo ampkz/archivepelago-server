@@ -281,7 +281,7 @@ router.post(`${uriConfig.user}/:userId`, sendStatus405('GET, DELETE, PUT'));
 
  /**
  * @swagger
- * /admin/user/{userid}:
+ * /admin/user/{userId}:
  *   get:
  *     summary: Get user by userId.
  *     parameters:
