@@ -320,7 +320,7 @@ router.get(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), u
 
 /**
  * @swagger
- * /admin/user/{userid}:
+ * /admin/user/{userId}:
  *   put:
  *     summary: Update user.
  *     parameters:
@@ -402,7 +402,7 @@ router.get(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), u
 
 /**
  * @swagger
- * /admin/user/{userid}:
+ * /admin/user/{userId}:
  *   delete:
  *     summary: Delete user.
  *     parameters:

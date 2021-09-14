@@ -197,6 +197,68 @@ router.get(`${uriConfig.person}/:personId`, personRoutes.getPerson);
  * */
 router.delete(`${uriConfig.person}/:personId`, permitRoles(Auth.ADMIN, Auth.CONTRIBUTOR), personRoutes.deletePerson);
 
+/**
+ * @swagger
+ * /person/{personId}:
+ *   put:
+ *     summary: Update person.
+ *     parameters:
+ *       - in: path
+ *         name: personID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID of the person.
+ *     tags:
+ *       - Person
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               lastName:
+ *                 required: true
+ *                 type: string
+ *                 example: Toklas
+ *                 description: Person's new or current last name.
+ *               firstName:
+ *                 required: false
+ *                 type: string
+ *                 example: Alice
+ *                 description: Person's new or current first name.
+ *               secondName:
+ *                 required: false
+ *                 type: string
+ *                 example: Babette
+ *                 description: Person's new or current second/middle name.
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Updated person.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Person'
+ *       400:
+ *         description: Missing/malformed fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/FieldErrorMessage'
+ *       401:
+ *         description: Invalid authentication token.
+ *         headers:
+ *           WWW-Authenticate:
+ *             schema:
+ *               type: string
+ *               example: Archivepelago Authentication
+ *             description: The authentication realm.
+ *       404:
+ *         description: Person not found.
+ */
 router.put(`${uriConfig.person}/:personId`, permitRoles(Auth.ADMIN, Auth.CONTRIBUTOR), personRoutes.updatePerson);
 
 module.exports = router;
