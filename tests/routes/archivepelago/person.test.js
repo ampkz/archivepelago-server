@@ -161,3 +161,50 @@ describe(`${uriConfig.api + uriConfig.person}/:personId GET Routes`, () => {
   })
 
 })
+
+describe(`${uriConfig.api + uriConfig.person}/:personId DELETE Routes`, () => {
+  it('should return http status of 401 on DELETE without authentication cookie', (done) => {
+    supertest(server).delete(`${uriConfig.api + uriConfig.person}/unknownid`)
+      .expect(401)
+      .then(() => {
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      })
+  })
+  
+  it('should return http status of 404 on DELETE with unknown personId and authentication cookie', async (done) => {
+    const agent = supertest.agent(server);
+    await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+    agent.delete(`${uriConfig.api + uriConfig.person}/unknownid`)
+      .expect(404)
+      .then(() => {
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      })
+  })
+
+  it('should return http status of 204 on DELETE with known personId and authentication cookie', async (done) => {
+    let person;
+    try{
+      person = await archiveNeo4jPerson.createPerson(faker.name.lastName(), faker.name.firstName(), faker.name.middleName());
+    }catch(e){
+      console.log(e);
+    }
+    
+    const agent = supertest.agent(server);
+    await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+    agent.delete(`${uriConfig.api + uriConfig.person}/${person.record.properties.id}`)
+      .expect(204)
+      .then(() => {
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      })
+  })
+
+});

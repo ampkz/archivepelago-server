@@ -45,3 +45,15 @@ exports.getPerson = function(req, res, next){
       return handleResourceError(error, next, req);
     })
 }
+
+exports.deletePerson = function(req, res, next){
+  const { personId } = req.params;
+
+  archiveNeo4jPerson.deletePerson(personId)
+    .then(() => {
+      return res.status(204).end();
+    })
+    .catch((error) => {
+      return handleResourceError(error, next, req);
+    })
+}

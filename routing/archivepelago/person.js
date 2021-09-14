@@ -165,4 +165,36 @@ router.get(uriConfig.person, personRoutes.getPeople);
  */
 router.get(`${uriConfig.person}/:personId`, personRoutes.getPerson);
 
+/**
+ * @swagger
+ * /person/{personId}:
+ *   delete:
+ *     summary: Delete person.
+ *     parameters:
+ *       - in: path
+ *         name: personId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID of the user.
+ *     tags:
+ *       - Person
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       204:
+ *         description: Person was deleted successfully.
+ *       401:
+ *         description: Invalid authentication token.
+ *         headers:
+ *           WWW-Authenticate:
+ *             schema:
+ *               type: string
+ *               example: Archivepelago Authentication
+ *             description: The authentication realm.
+ *       404:
+ *         description: Person not found.
+ * */
+router.delete(`${uriConfig.person}/:personId`, permitRoles(Auth.ADMIN, Auth.CONTRIBUTOR), personRoutes.deletePerson);
+
 module.exports = router;
