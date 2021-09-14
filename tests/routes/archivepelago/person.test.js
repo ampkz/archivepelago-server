@@ -163,7 +163,7 @@ describe(`${uriConfig.api + uriConfig.person}/:personId GET Routes`, () => {
 })
 
 describe(`${uriConfig.api + uriConfig.person}/:personId DELETE Routes`, () => {
-  it('should return http status of 401 on DELETE without authentication cookie', (done) => {
+  it(`should return http status of 401 on DELETE without authentication cookie`, (done) => {
     supertest(server).delete(`${uriConfig.api + uriConfig.person}/unknownid`)
       .expect(401)
       .then(() => {
@@ -174,7 +174,7 @@ describe(`${uriConfig.api + uriConfig.person}/:personId DELETE Routes`, () => {
       })
   })
   
-  it('should return http status of 404 on DELETE with unknown personId and authentication cookie', async (done) => {
+  it(`should return http status of 404 on DELETE with unknown personId and authentication cookie`, async (done) => {
     const agent = supertest.agent(server);
     await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
     agent.delete(`${uriConfig.api + uriConfig.person}/unknownid`)
@@ -187,7 +187,7 @@ describe(`${uriConfig.api + uriConfig.person}/:personId DELETE Routes`, () => {
       })
   })
 
-  it('should return http status of 204 on DELETE with known personId and authentication cookie', async (done) => {
+  it(`should return http status of 204 on DELETE with known personId and authentication cookie`, async (done) => {
     let person;
     try{
       person = await archiveNeo4jPerson.createPerson(faker.name.lastName(), faker.name.firstName(), faker.name.middleName());
@@ -207,4 +207,71 @@ describe(`${uriConfig.api + uriConfig.person}/:personId DELETE Routes`, () => {
       })
   })
 
-});
+})
+
+describe(`${uriConfig.api + uriConfig.person}/:personId PUT Routes`, () => {
+  it(`should return http status of 401 on PUT without authorization cookie`, (done) => {
+    supertest(server).put(`${uriConfig.api + uriConfig.person}/unknownid`)
+      .expect(404)
+        .then(() => {
+          done();
+        })
+        .catch((error) => {
+          done(error);
+        })
+  })
+
+  it(`should return http status of 404 on PUT with unknown personId and authorization cookie`, async (done) => {
+    const agent = supertest.agent(server);
+    await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+    agent.put(`${uriConfig.api + uriConfig.person}/unknownid`)
+      .expect(404)
+      .then(() => {
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      })
+  })
+
+  it(`should return http status of 400 with required fields on PUT with authorization cookie`, async (done) => {
+    const agent = supertest.agent(server);
+    await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+    agent.put(`${uriConfig.api + uriConfig.person}/personId`)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe(RoutingError.INVALID_REQUEST);
+        expect(response.body.errors).toContainEqual({field: 'lastName', message: FieldError.REQUIRED});
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      })
+  })
+
+  it(`should return http status of 200 with updated person on PUT with authorization cookie`, async (done) => {
+    let person;
+    try{
+      person = await archiveNeo4jPerson.createPerson(faker.name.lastName(), faker.name.firstName(), faker.name.middleName());
+    }catch(e){
+      console.log(e);
+    }
+
+    const lastName = faker.name.lastName();
+    const firstName = faker.name.firstName();
+    const secondName = faker.name.middleName();
+
+    const agent = supertest.agent(server);
+    await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
+    agent.put(`${uriConfig.api + uriConfig.person}/${person.record.properties.id}`)
+      .send({lastName, firstName, secondName})
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toEqual({id: person.record.properties.id, lastName, firstName, secondName});
+        done();
+      })
+      .catch((error) => {
+        done(error);
+      })
+  })
+})

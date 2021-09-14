@@ -197,4 +197,6 @@ router.get(`${uriConfig.person}/:personId`, personRoutes.getPerson);
  * */
 router.delete(`${uriConfig.person}/:personId`, permitRoles(Auth.ADMIN, Auth.CONTRIBUTOR), personRoutes.deletePerson);
 
+router.put(`${uriConfig.person}/:personId`, permitRoles(Auth.ADMIN, Auth.CONTRIBUTOR), personRoutes.updatePerson);
+
 module.exports = router;
