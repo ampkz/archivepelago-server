@@ -1,7 +1,7 @@
 const { findResource, getResource, createResource, deleteResource } = require('./utils');
 
 exports.createPerson = function(lastName, firstName, secondName) {
-  return createResource(null, {lastName, firstName, secondName}, `CREATE (p:PERSON {id:apoc.create.uuid(), firstName: $firstName, lastName: $lastName, secondName: $secondName}) RETURN p`);
+  return createResource(null, {lastName, firstName: firstName || '', secondName: secondName || ''}, `CREATE (p:PERSON {id:apoc.create.uuid(), firstName: $firstName, lastName: $lastName, secondName: $secondName}) RETURN p`);
 }
 
 exports.getPeople = function(){

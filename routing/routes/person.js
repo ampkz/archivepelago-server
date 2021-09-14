@@ -13,7 +13,7 @@ exports.createPerson = function(req, res, next){
     return next(required);
   }
 
-  archiveNeo4jPerson.createPerson(lastName, firstName || '', secondName || '')
+  archiveNeo4jPerson.createPerson(lastName, firstName, secondName)
     .then((person) => {
       return res.set('Location', `/${person.record.properties.id}`).status(201).json(person.record.properties);
     })
