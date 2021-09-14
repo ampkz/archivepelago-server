@@ -67,7 +67,7 @@ const userRoutes = require('../routes/user');
  *           example: Toklas
  *         firstName:
  *           type: string
- *           required: true
+ *           required: false
  *           description: User's first name.
  *           example: Alice
  *         secondName:
