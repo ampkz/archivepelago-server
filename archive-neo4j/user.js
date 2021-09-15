@@ -15,7 +15,6 @@ exports.createUser = function(email, nameObj, auth, pwd, saltRounds = 10){
 
             try{
                 driver = connect();
-                // eslint-disable-next-line no-undef
                 sess = driver.session(getSessionOptions(process.env.USERS_DB));
             }catch(e){
                 reject(new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e));
@@ -79,7 +78,6 @@ exports.checkPassword = function(email, password){
 
             try{
                 driver = connect();
-                // eslint-disable-next-line no-undef
                 sess = driver.session(getSessionOptions(process.env.USERS_DB));
             }catch(e){
                 reject(new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e));
@@ -120,22 +118,18 @@ exports.checkPassword = function(email, password){
 }
 
 exports.getUsers = function(){
-    // eslint-disable-next-line no-undef
     return getResource(findResource, [`MATCH (u:USER) RETURN u`, {}, null, process.env.USERS_DB], [0], process.env.USERS_DB);
 }
 
 exports.getUser = function(id){
-    // eslint-disable-next-line no-undef
     return getResource(findResource, ['MATCH (u:USER {id: $id}) RETURN u', {id}, null, process.env.USERS_DB]);
 }
 
 exports.deleteUser = function(id){
-    // eslint-disable-next-line no-undef
     return deleteResource(findResource, ['MATCH (u:USER {id: $id}) RETURN u', {id}, null, process.env.USERS_DB], 'MATCH (u:USER {id: $id}) DELETE u RETURN u', {id}, 1, null, process.env.USERS_DB);
 }
 
 exports.updateUser = function(id, email, nameObj, auth){
-    // eslint-disable-next-line no-undef
     return updateResource('MATCH (u:USER {id: $id}) RETURN u', {id}, null, 'MATCH (u:USER {id: $id}) SET u.email = $email, u.firstName = $firstName, u.secondName = $secondName, u.lastName = $lastName, u.auth = $auth RETURN u', {id, email, auth, firstName: nameObj.firstName, secondName: nameObj.secondName || '', lastName: nameObj.lastName}, [0], process.env.USERS_DB)
 }
 
@@ -146,7 +140,6 @@ exports.updatePassword = function(id, password, saltRounds = 10){
 
             try{
                 driver = connect();
-                // eslint-disable-next-line no-undef
                 sess = driver.session(getSessionOptions(process.env.USERS_DB));
             }catch(e){
                 reject(new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e));

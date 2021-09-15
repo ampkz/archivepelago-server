@@ -11,7 +11,6 @@ function errorHandler(error, req, res, next){
 }
 
 function sendError401(res){
-    // eslint-disable-next-line no-undef
     return res.set('WWW-Authenticate', `xBasic realm="${process.env.AUTH_REALM}"`).status(401).end();
 }
 

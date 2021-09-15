@@ -5,7 +5,6 @@ const { getSessionOptions } = require('../_helpers/db');
 function connect(){
   let driver;
   try{
-     // eslint-disable-next-line no-undef
      driver = neo4j.driver(`bolt://${process.env.NEO4J_HOST}:${process.env.NEO4J_PORT}`, neo4j.auth.basic(process.env.NEO4J_USER, process.env.NEO4J_PWD));
   }catch(e){
     throw new Error("Could Not Connect to DB");
@@ -18,14 +17,12 @@ async function close(driver, session){
   await driver.close();
 }
 
-// eslint-disable-next-line no-undef
 async function addRelationship(nodeAMatchingQuery, nodeAParams, nodeBMatchingQuery, nodeBParams, relMatchingQuery, relParams, creationQuery, recordIds=[0], db = process.env.ARCHIVE_DB){
       let driver,
         sess;
       
       try{
         driver = connect();
-        // eslint-disable-next-line no-undef
         sess = driver.session(getSessionOptions(db));
       }catch(e){
         throw new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e);
@@ -98,14 +95,12 @@ async function addRelationship(nodeAMatchingQuery, nodeAParams, nodeBMatchingQue
       }
 }
 
-// eslint-disable-next-line no-undef
 async function addChildToParentResource(parentResourceMatchingQuery, parentResourceParams, newAttachmentQuery, childAttachQuery, childParams, recordIds=[0], db = process.env.ARCHIVE_DB){
     let driver,
     sess;
 
     try{
       driver = connect();
-      // eslint-disable-next-line no-undef
       sess = driver.session(getSessionOptions(db));
     }catch(e){
       throw new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e);
@@ -165,7 +160,6 @@ async function addChildToParentResource(parentResourceMatchingQuery, parentResou
     }
 }
 
-// eslint-disable-next-line no-undef
 async function findResource(query, queryParams={}, session=null, db = process.env.ARCHIVE_DB){
   let driver,
     sess;
@@ -199,13 +193,11 @@ function prepRecord(record, recordIds = [0]){
   return preppedRecord;
 }
 
-// eslint-disable-next-line no-undef
 async function deleteResource(findingFunction, findingFunctionArgs, deletionQuery, queryParams, nodesToDelete = 1, relationshipsToDelete = null, db = process.env.ARCHIVE_DB){
     let driver, sess;
 
     try{
         driver = connect();
-        // eslint-disable-next-line no-undef
         sess = driver.session(getSessionOptions(db));
     }catch(e){
         throw new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e);
@@ -253,13 +245,11 @@ async function deleteResource(findingFunction, findingFunctionArgs, deletionQuer
     }
 }
 
-// eslint-disable-next-line no-undef
 async function createResource(findingQuery, queryParams, creationQuery, recordIds=[0], db = process.env.ARCHIVE_DB){
       let driver, sess;
 
       try{
         driver = connect();
-        // eslint-disable-next-line no-undef
         sess = driver.session(getSessionOptions(db));
       }catch(e){
         throw new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e);
@@ -305,7 +295,6 @@ async function createResource(findingQuery, queryParams, creationQuery, recordId
 
 }
 
-// eslint-disable-next-line no-undef
 async function getResource(findingFunction, findingFunctionArgs, recordIds = [0], db = process.env.ARCHIVE_DB){
     let driver, sess;
 
@@ -338,13 +327,11 @@ async function getResource(findingFunction, findingFunctionArgs, recordIds = [0]
     }
 }
 
-// eslint-disable-next-line no-undef
 async function getPath(pathQuery, pathParams, db = process.env.ARCHIVE_DB){
     let driver, sess;
 
     try{
       driver = connect();
-      // eslint-disable-next-line no-undef
       sess = driver.session(getSessionOptions(db));
     }catch(e){
       throw new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e);
@@ -406,13 +393,11 @@ const deepEqual = function (x, y) {
   }
 }
 
-// eslint-disable-next-line no-undef
 async function updateResource(matchingQuery, queryParams, newMatchingQueryParams, updateQuery, updateParams, changedRecordIds=[0], db = process.env.ARCHIVE_DB){
     let driver, sess;
 
     try{
         driver = connect();
-        // eslint-disable-next-line no-undef
         sess = driver.session(getSessionOptions(db));
     }catch(e){
         throw new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e);

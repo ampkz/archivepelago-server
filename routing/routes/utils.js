@@ -21,7 +21,7 @@ exports.handleResourceError = function(error, next, req){
             status = 500;
             break;
     }
-
+    
     if(status === 500){
         return exports.processError(error, next, req);
     }else{
@@ -32,7 +32,6 @@ exports.handleResourceError = function(error, next, req){
 exports.processError = function(error, next, req){
     // console.log(error);
     let uuidDate = null;
-    // eslint-disable-next-line no-undef
     if(process.env.LOG_ERRORS === "true") uuidDate = logError(error, req);
     return next(createError(500, error.message, error.code, `${uuidDate !== null ? `REF: ${uuidDate.uuid} DATE: ${uuidDate.date}` : ``}`));
 }

@@ -6,7 +6,6 @@ const cors = require('cors');
 const uriConfig = require('../routing/uriConfig');
 const cookieParser = require('cookie-parser');
 
-// eslint-disable-next-line no-undef
 global.__basedir = __dirname;
 
 const { errorHandler } = require("../middleware/errors");
@@ -24,7 +23,6 @@ app.use(uriConfig.api, authenticate);
 app.use(uriConfig.api + uriConfig.admin, admin);
 app.use(uriConfig.api, person);
 
-// eslint-disable-next-line no-undef
 if(process.env.NODE_ENV !== 'test'){
 	const swaggerJSDoc = require('swagger-jsdoc');
 	const swaggerUi = require('swagger-ui-express');

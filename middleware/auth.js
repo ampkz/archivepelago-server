@@ -8,7 +8,6 @@ function permitRoles(...rolesPermitted) {
             if(req.cookies.jwt){
                 const token = req.cookies.jwt;
                 
-                // eslint-disable-next-line no-undef
                 jwt.verify(token, process.env.TOKEN_SECRET, function(err, decoded){
                     if(decoded && (rolesPermitted.includes(decoded.auth) || (rolesPermitted.includes(Auth.SAME_ID) && decoded.id === req.params.userId))){
                         next();

@@ -12,7 +12,6 @@ class Locations {
 }
 
 const getSessionOptions = function(dbName){
-    // eslint-disable-next-line no-undef
     return {database: `${dbName}${process.env.NODE_ENV ? `${process.env.NODE_ENV}` : ``}`}
 }
 
