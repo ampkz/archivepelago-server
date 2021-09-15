@@ -311,7 +311,7 @@ async function getResource(findingFunction, findingFunctionArgs, recordIds = [0]
 
     try{
       driver = connect();
-      // eslint-disable-next-line no-undef
+      
       sess = driver.session(getSessionOptions(db));
     }catch(e){
       throw new DBError(DBError.COULD_NOT_CONNECT_TO_DB, 1001, e)

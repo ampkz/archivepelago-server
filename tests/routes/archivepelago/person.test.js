@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /**
  * Archive dates routes
  * 
@@ -111,7 +110,7 @@ describe (`${uriConfig.api + uriConfig.person} Routes`, () => {
     try{
       person = await archiveNeo4jPerson.createPerson(faker.name.lastName(), faker.name.firstName(), faker.name.middleName());
     }catch(e){
-      console.log(e);
+      return done(e);
     }
 
     supertest(server).get(uriConfig.api + uriConfig.person)
@@ -145,7 +144,7 @@ describe(`${uriConfig.api + uriConfig.person}/:personId GET Routes`, () => {
     try{
       person = await archiveNeo4jPerson.createPerson(faker.name.lastName(), faker.name.firstName(), faker.name.middleName());
     }catch(e){
-      console.log(e);
+      return done(e);
     }
 
     supertest(server).get(`${uriConfig.api + uriConfig.person}/${person.record.properties.id}`)
@@ -192,7 +191,7 @@ describe(`${uriConfig.api + uriConfig.person}/:personId DELETE Routes`, () => {
     try{
       person = await archiveNeo4jPerson.createPerson(faker.name.lastName(), faker.name.firstName(), faker.name.middleName());
     }catch(e){
-      console.log(e);
+      return done(e);
     }
     
     const agent = supertest.agent(server);
@@ -256,7 +255,7 @@ describe(`${uriConfig.api + uriConfig.person}/:personId PUT Routes`, () => {
     try{
       person = await archiveNeo4jPerson.createPerson(faker.name.lastName(), faker.name.firstName(), faker.name.middleName());
     }catch(e){
-      console.log(e);
+      return done(e);
     }
 
     const lastName = faker.name.lastName();

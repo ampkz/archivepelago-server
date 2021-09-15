@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /**
  * Archive dates routes
  * 

@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /**
  * Archive dates routes
  * 
@@ -176,7 +175,7 @@ describe(`${uriConfig.api + uriConfig.admin + uriConfig.user} Routes`, () => {
         try{
             user = await archiveNeo4jUsers.createUser(faker.internet.email(), {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.ADMIN, faker.internet.password())
         }catch(e){
-            console.log(e);
+            return done(e);
         }
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
@@ -228,7 +227,7 @@ describe(`${uriConfig.api + uriConfig.admin + uriConfig.user}/:userId GET Routes
         try{
             user = await archiveNeo4jUsers.createUser(faker.internet.email(), {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.ADMIN, faker.internet.password())
         }catch(e){
-            console.log(e);
+            return done(e);
         }
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
@@ -250,7 +249,7 @@ describe(`${uriConfig.api + uriConfig.admin + uriConfig.user}/:userId GET Routes
         try{
             user = await archiveNeo4jUsers.createUser(email, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, password)
         }catch(e){
-            console.log(e);
+            return done(e);
         }
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email, password});
@@ -313,7 +312,7 @@ describe(`${uriConfig.api + uriConfig.admin + uriConfig.user}/:userId DELETE Rou
         try{
             user = await archiveNeo4jUsers.createUser(faker.internet.email(), {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.ADMIN, faker.internet.password())
         }catch(e){
-            console.log(e);
+            return done(e);
         }
         
         const agent = supertest.agent(server);
@@ -336,7 +335,7 @@ describe(`${uriConfig.api + uriConfig.admin + uriConfig.user}/:userId DELETE Rou
         try{
             user = await archiveNeo4jUsers.createUser(email, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, password)
         }catch(e){
-            console.log(e);
+            return done(e);
         }
         
         const agent = supertest.agent(server);
@@ -418,7 +417,7 @@ describe(`${uriConfig.api + uriConfig.admin + uriConfig.user}/:userId PUT Routes
         try{
             user = await archiveNeo4jUsers.createUser(faker.internet.email(), {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.ADMIN, faker.internet.password())
         }catch(e){
-            console.log(e);
+            return done(e);
         }
         const email = faker.internet.email();
         const firstName = faker.name.firstName();
@@ -453,7 +452,7 @@ describe(`${uriConfig.api + uriConfig.admin + uriConfig.user}/:userId PUT Routes
         try{
             user = await archiveNeo4jUsers.createUser(origEmail, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, origPassword);
         }catch(e){
-            console.log(e);
+            return done(e);
         }
         const email = faker.internet.email();
         const firstName = faker.name.firstName();
@@ -486,7 +485,7 @@ describe(`${uriConfig.api + uriConfig.admin + uriConfig.user}/:userId PUT Routes
         try{
             user = await archiveNeo4jUsers.createUser(origEmail, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, origPassword);
         }catch(e){
-            console.log(e);
+            return done(e);
         }
         const email = faker.internet.email();
         const firstName = faker.name.firstName();
@@ -513,7 +512,7 @@ describe(`${uriConfig.api + uriConfig.admin + uriConfig.user}/:userId PUT Routes
         try{
             user = await archiveNeo4jUsers.createUser(faker.internet.email(), {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, faker.internet.password());
         }catch(e){
-            console.log(e);
+            return done(e);
         }
         const agent = supertest.agent(server);
         await agent.post(`${uriConfig.api}/authenticate`).send({email: 'admin', password: 'admin'});
@@ -539,7 +538,7 @@ describe(`${uriConfig.api + uriConfig.admin + uriConfig.user}/:userId PUT Routes
         try{
             user = await archiveNeo4jUsers.createUser(origEmail, {firstName: faker.name.firstName(), lastName: faker.name.lastName()}, Auth.CONTRIBUTOR, origPassword);
         }catch(e){
-            console.log(e);
+            return done(e);
         }
         const email = faker.internet.email();
         const firstName = faker.name.firstName();
