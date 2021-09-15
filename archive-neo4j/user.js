@@ -3,8 +3,6 @@ const { UserError, DBError, InternalError, ArchiveError, DataError } = require('
 const { connect, close, prepRecord, findResource, getResource, deleteResource, updateResource } = require('./utils');
 const { getSessionOptions } = require('../_helpers/db');
 
-//REM: FIX PROMISE ANTI-PATTERN
-
 //nameObj should be an object with 'firstName', 'lastName', and (optionally) 'secondName' properties.
 //auth should be a role defined within the Auth class
 exports.createUser = async function(email, nameObj, auth, pwd, saltRounds = 10){
