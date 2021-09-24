@@ -99,6 +99,17 @@ const userRoutes = require('../routes/user');
  *                 type: string
  *                 description: Requirements for the field.
  *                 example: Required
+ *     InternalError:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: Description of the error.
+ *           example: Could not connect to DB
+ *         code:
+ *           type: integer
+ *           description: Code reference to the error.
+ *           example: 1001
  */
 
 /**
@@ -177,6 +188,12 @@ const userRoutes = require('../routes/user');
  *             description: The authentication realm.
  *       403:
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  *             
  */
 router.post(uriConfig.user, permitRoles(Auth.ADMIN), userRoutes.createUser);
@@ -209,6 +226,12 @@ router.post(uriConfig.user, permitRoles(Auth.ADMIN), userRoutes.createUser);
  *             description: The authentication realm.
  *       403:
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  *             
  */
 router.get(uriConfig.user, permitRoles(Auth.ADMIN), userRoutes.getUsers);
@@ -230,6 +253,12 @@ router.get(uriConfig.user, permitRoles(Auth.ADMIN), userRoutes.getUsers);
  *               type: string
  *               example: 'POST'
  *             description: The methods allowed at this endpoint.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  */
 router.delete(uriConfig.user, sendStatus405('POST, GET'));
 
@@ -249,6 +278,12 @@ router.delete(uriConfig.user, sendStatus405('POST, GET'));
  *               type: string
  *               example: 'POST'
  *             description: The methods allowed at this endpoint.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  */
 router.put(uriConfig.user, sendStatus405('POST, GET'));
 
@@ -275,6 +310,12 @@ router.put(uriConfig.user, sendStatus405('POST, GET'));
  *               type: string
  *               example: 'GET, DELETE, PUT'
  *             description: The methods allowed at this endpoint.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  */
 router.post(`${uriConfig.user}/:userId`, sendStatus405('GET, DELETE, PUT'));
 
@@ -314,6 +355,12 @@ router.post(`${uriConfig.user}/:userId`, sendStatus405('GET, DELETE, PUT'));
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
  *       404:
  *         description: User not found.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  * 
  */
 router.get(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), userRoutes.getUser);
@@ -397,6 +444,12 @@ router.get(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), u
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
  *       404:
  *         description: User not found.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  */
  router.put(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), userRoutes.updateUser);
 
@@ -431,6 +484,12 @@ router.get(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), u
  *         description: Forbidden. Authenticated role is not permitted to access this endpoint.
  *       404:
  *         description: User not found.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  * */
  router.delete(`${uriConfig.user}/:userId`, permitRoles(Auth.ADMIN, Auth.SAME_ID), userRoutes.deleteUser);
 

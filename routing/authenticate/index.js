@@ -45,6 +45,12 @@ const userRoutes = require('../routes/user');
  *               type: string
  *               example: Archivepelago Authentication
  *             description: The authentication realm.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  *             
  */
  router.post('/authenticate', userRoutes.authenticate)
@@ -66,6 +72,12 @@ const userRoutes = require('../routes/user');
   *               type: string
   *               example: 'POST'
   *             description: The methods allowed at this endpoint.
+  *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
   */
  router.get('/authenticate', sendStatus405('POST'));
  
@@ -85,6 +97,12 @@ const userRoutes = require('../routes/user');
   *               type: string
   *               example: 'POST'
   *             description: The methods allowed at this endpoint.
+  *       500:
+  *         description: Internal Server Error.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/InternalError'
   */
  router.put('/authenticate', sendStatus405('POST'));
  
@@ -104,6 +122,12 @@ const userRoutes = require('../routes/user');
   *               type: string
   *               example: 'POST'
   *             description: The methods allowed at this endpoint.
+  *       500:
+  *         description: Internal Server Error.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/InternalError'
   */
  router.delete('/authenticate', sendStatus405('POST'));
 

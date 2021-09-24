@@ -24,6 +24,12 @@ const { sendStatus405 } = require('../../middleware/errors');
  *               type: string
  *               example: 'GET, POST'
  *             description: The methods allowed at this endpoint.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  */
 router.delete(uriConfig.person, sendStatus405('GET, POST'));
 
@@ -43,6 +49,12 @@ router.delete(uriConfig.person, sendStatus405('GET, POST'));
  *               type: string
  *               example: 'GET'
  *             description: The methods allowed at this endpoint.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  */
 router.put(uriConfig.person, sendStatus405('GET, POST'));
 
@@ -102,6 +114,12 @@ router.put(uriConfig.person, sendStatus405('GET, POST'));
  *               type: string
  *               example: Archivepelago Authentication
  *             description: The authentication realm.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  *             
  */
 router.post(uriConfig.person, permitRoles(Auth.ADMIN, Auth.CONTRIBUTOR), personRoutes.createPerson);
@@ -124,6 +142,12 @@ router.post(uriConfig.person, permitRoles(Auth.ADMIN, Auth.CONTRIBUTOR), personR
  *                 $ref: '#/components/schemas/Person'
  *       404:
  *         description: No person found.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  *             
  */
 router.get(uriConfig.person, personRoutes.getPeople);
@@ -161,6 +185,12 @@ router.get(uriConfig.person, personRoutes.getPeople);
  *             description: The authentication realm.
  *       404:
  *         description: Person not found.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  * 
  */
 router.get(`${uriConfig.person}/:personId`, personRoutes.getPerson);
@@ -194,6 +224,12 @@ router.get(`${uriConfig.person}/:personId`, personRoutes.getPerson);
  *             description: The authentication realm.
  *       404:
  *         description: Person not found.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  * */
 router.delete(`${uriConfig.person}/:personId`, permitRoles(Auth.ADMIN, Auth.CONTRIBUTOR), personRoutes.deletePerson);
 
@@ -258,6 +294,12 @@ router.delete(`${uriConfig.person}/:personId`, permitRoles(Auth.ADMIN, Auth.CONT
  *             description: The authentication realm.
  *       404:
  *         description: Person not found.
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalError'
  */
 router.put(`${uriConfig.person}/:personId`, permitRoles(Auth.ADMIN, Auth.CONTRIBUTOR), personRoutes.updatePerson);
 
