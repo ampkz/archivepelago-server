@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
 const app = express();
-const cors = require('cors');
+//const cors = require('cors');
 const uriConfig = require('../routing/uriConfig');
 const cookieParser = require('cookie-parser');
 
@@ -13,7 +13,7 @@ const admin = require('../routing/admin');
 const authenticate = require('../routing/authenticate');
 const person = require('../routing/archivepelago/person');
 
-app.use(cors({origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true}));
+//app.use(cors({origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true}));
 app.use(cookieParser());
 app.use(helmet());
 app.use(express.json());
@@ -33,7 +33,7 @@ if(process.env.NODE_ENV !== 'test'){
 			title: 'Archivepelago API',
 			version: '0.2.0',
 			description:
-				'This is the REST API for Archivepelago, a project modeling the transmission of notions of sexuality and gender by mapping networks of 19th and 20th century queer writers and artists.',
+				'This is the RESTish API for Archivepelago, a project modeling the transmission of notions of sexuality and gender by mapping networks of 19th and 20th century queer writers and artists.',
 			license: {
 				name: 'Licensed Under Open Source (GPLv3) License',
 				url: 'https://www.gnu.org/licenses/gpl-3.0.html',
