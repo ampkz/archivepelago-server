@@ -4,7 +4,7 @@
   "description": "The back-end for Archivepelago, a project on the transmission and translation of notions of sexuality and gender by mapping networks of queer writers and artists.",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --detectOpenHandles --forceExit"
   },
   "repository": {
     "type": "git",
